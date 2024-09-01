@@ -8,12 +8,24 @@
     "dev": "nodemon ./src/index.js | pino-pretty",
     "build": "npm run build-docs",
     "build-docs": "redocly bundle --ext json -o docs/swagger.json",
-    "preview-docs": "redocly preview-docs"
+    "preview-docs": "redocly preview-docs",
+    "prepare": "husky"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "@redocly/cli": "^1.21.1"
+    "@redocly/cli": "^1.21.1",
+    "husky": "^9.1.5",
+    "lint-staged": "^15.2.10"
+  },
+  "lint-staged": {
+    "*.{js}": [
+      "eslint --fix",
+      "prettier --write"
+    ],
+    "*.{json,html,md}": [
+      "prettier --write"
+    ]
   }
 }

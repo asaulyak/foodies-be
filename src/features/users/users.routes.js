@@ -7,6 +7,6 @@ import { authMiddleware } from '../../common/middleware/auth.middleware.js';
 
 export const userRouter = express.Router();
 
-userRouter.post('/register', validateBodyMiddleware(userRegisterSchema), registerUser);
-userRouter.post('/login', validateBodyMiddleware(userLoginSchema), loginUser);
+userRouter.post('/signup', validateBodyMiddleware(userRegisterSchema), registerUser);
+userRouter.post('/signin', validateBodyMiddleware(userLoginSchema), loginUser);
 userRouter.get('/me', authMiddleware, me);

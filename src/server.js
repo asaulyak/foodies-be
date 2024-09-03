@@ -13,9 +13,8 @@ app.use(express.json());
 // cors
 app.use(cors());
 
-app.use('/avatars', express.static('public/avatars'));
-
-app.use('/api/user', userRouter);
+// Add routes here
+app.use('/api/users', userRouter);
 
 app.use((_, res, __) => {
   res.status(404).json({

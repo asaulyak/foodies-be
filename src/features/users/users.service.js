@@ -1,9 +1,9 @@
-import { User } from '../../common/data/entities/user/user.entity.js';
 import gravatar from 'gravatar';
 import bcrypt from 'bcrypt';
+import { Users } from '../../common/data/entities/users/users.entity.js';
 
 export const getUserByEmail = email => {
-  return User.findOne({
+  return Users.findOne({
     where: {
       email
     }
@@ -29,7 +29,7 @@ export const createUser = async ({ password, email, name }) => {
     })
   );
 
-  return User.create({
+  return Users.create({
     email,
     password: hashedPassword,
     avatar,
@@ -60,7 +60,7 @@ export const comparePassword = async function (email, password) {
 };
 
 export const updateUserById = async (id, data) => {
-  return User.update(data, {
+  return Users.update(data, {
     where: {
       id
     }

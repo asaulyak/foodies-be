@@ -1,9 +1,9 @@
 import { DataTypes, fn, Model } from 'sequelize';
 import { sequelize } from '../../sequelize.js';
 
-export class User extends Model {}
+export class Ingredients extends Model {}
 
-User.init(
+Ingredients.init(
   {
     id: {
       type: DataTypes.UUID,
@@ -15,23 +15,14 @@ User.init(
       type: DataTypes.STRING,
       allowNull: false
     },
-    password: {
-      type: DataTypes.STRING,
+    description: {
+      type: DataTypes.TEXT,
       allowNull: false
     },
-    email: {
-      type: DataTypes.STRING,
-      allowNull: false,
-      unique: true
-    },
-    token: {
+    image: {
       type: DataTypes.TEXT,
-      defaultValue: null
-    },
-    avatar: {
-      type: DataTypes.STRING,
-      allowNull: true
+      allowNull: false
     }
   },
-  { sequelize, modelName: 'users' }
+  { sequelize, modelName: 'ingredients' }
 );

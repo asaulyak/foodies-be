@@ -50,7 +50,7 @@ To set up the database using Docker Compose, follow these steps:
 3. Run the following command to start the database container:
 
    ```bash
-   docker-compose up -d
+   docker compose up -d
    ```
 
 4. Your PostgreSQL database will now be running and accessible on `localhost:5432`.
@@ -75,12 +75,12 @@ If you need to restart your database due to any issues or changes, you can do so
 2. Run the following command to stop and remove the existing containers and associated volumes:
 
    ```bash
-   docker-compose down --volumes
+   docker compose down --volumes
    ```
 
 3. Start the database container again:
    ```bash
-   docker-compose up -d
+   docker compose up -d
    ```
 
 This will remove the existing data and restart the database container with a fresh state.

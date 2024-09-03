@@ -1,0 +1,50 @@
+import express from 'express';
+import cors from 'cors';
+import { sequelize } from './common/data/sequelize.js';
+import { configEnvVars, ENV_CONFIG } from './common/config/index.js';
+import { userRouter } from './features/users/users.routes.js';
+
+configEnvVars();
+
+const app = express();
+
+// parse application/json
+app.use(express.json());
+// cors
+app.use(cors());
+
+app.use('/avatars', express.static('public/avatars'));
+
+app.use('/api/user', userRouter);
+
+app.use((_, res, __) => {
+  res.status(404).json({
+    status: 'error',
+    code: 404,
+    message: 'Path not found',
+    data: 'Not found'
+  });
+});
+
+app.use((err, _, res, __) => {
+  console.log(err.stack);
+
+  const { status = 500, message = 'Server error' } = err;
+
+  res.status(status).json({ message, status: 'fail', code: status });
+});
+
+sequelize
+  .authenticate()
+  .then(() => {
+    console.log('Database connection successful');
+
+    app.listen(ENV_CONFIG.PORT, function () {
+      console.log(`Server running. Use our API on port: ${ENV_CONFIG.PORT}`);
+    });
+  })
+  .catch(err => {
+    console.log(`Server not running. Error message: ${err.message}`);
+
+    process.exit(1);
+  });

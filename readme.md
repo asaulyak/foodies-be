@@ -7,8 +7,8 @@ Foodies is the backend part of the Cookbook application. It is a Node.js applica
 ## Table of Contents
 
 - [Installation](#installation)
-- [Usage](#usage)
 - [Database Setup](#database-setup)
+- [Usage](#usage)
 - [Restarting the Database](#restarting-the-database)
 - [Scripts](#scripts)
 - [License](#license)
@@ -26,19 +26,6 @@ Foodies is the backend part of the Cookbook application. It is a Node.js applica
 3. Install the dependencies:
    ```bash
    npm install
-   ```
-
-## Usage
-
-1. Create a `.env` file by renaming `.env.example`:
-
-   ```bash
-   mv .env.example .env
-   ```
-
-2. Start the application:
-   ```bash
-   npm start
    ```
 
 ## Database Setup
@@ -65,7 +52,18 @@ To set up the database using Docker Compose, follow these steps:
    DB_PORT=5432
    ```
 
-6. You can now run your migrations and seed data as needed using your preferred method.
+## Usage
+
+1. Create a `.env` file by renaming `.env.example`:
+
+   ```bash
+   mv .env.example .env
+   ```
+
+2. Start the application:
+   ```bash
+   npm start
+   ```
 
 ## Restarting the Database
 

@@ -1,8 +1,6 @@
 import { User } from '../../common/data/entities/user/user.entity.js';
 import gravatar from 'gravatar';
 import bcrypt from 'bcrypt';
-import { ENV_CONFIG } from '../../common/config/index.js';
-import jwt from 'jsonwebtoken';
 
 export const getUserByEmail = email => {
   return User.findOne({

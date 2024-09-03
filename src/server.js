@@ -4,6 +4,7 @@ import { sequelize } from './common/data/sequelize.js';
 import { configEnvVars, ENV_CONFIG } from './common/config/index.js';
 import { userRouter } from './features/users/users.routes.js';
 import { healthRouter } from './features/health/health.routes.js';
+import { recipesRouter } from './features/recipes/recipes.routes.js';
 
 configEnvVars();
 
@@ -17,6 +18,7 @@ app.use(cors());
 // Add routes here
 app.use('/api/users', userRouter);
 app.use('/api/health', healthRouter);
+app.use('/api/recipes', recipesRouter);
 
 app.use((_, res, __) => {
   res.status(404).json({
@@ -30,9 +32,13 @@ app.use((_, res, __) => {
 app.use((err, _, res, __) => {
   console.log(err.stack);
 
-  const { status = 500, message = 'Server error' } = err;
+  const defaultMessage = 'Server error';
 
-  res.status(status).json({ message, status: 'fail', code: status });
+  const { status = 500, message = defaultMessage } = err;
+
+  const isProd = ENV_CONFIG.NODE_ENV === 'prod';
+
+  res.status(status).json({ message: isProd ? defaultMessage : message, status: 'fail', code: status });
 });
 
 sequelize

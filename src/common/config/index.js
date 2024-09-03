@@ -2,7 +2,16 @@ import { config } from 'dotenv';
 
 config();
 
-const requiredEnvVariables = ['DB_HOST', 'DB_PORT', 'DB_NAME', 'DB_USER', 'DB_PASSWORD', 'JWT_SECRET', 'PORT'];
+const requiredEnvVariables = [
+  'DB_HOST',
+  'DB_PORT',
+  'DB_NAME',
+  'DB_USER',
+  'DB_PASSWORD',
+  'JWT_SECRET',
+  'PORT',
+  'NODE_ENV'
+];
 
 export const ENV_CONFIG = {};
 

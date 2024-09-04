@@ -8,4 +8,4 @@ import { validateBodyMiddleware } from '../../common/middleware/validate-body.mi
 export const recipesRouter = express.Router();
 
 recipesRouter.get('/:id', getById);
-recipesRouter.post('/', validateBodyMiddleware(recipesCreateSchema), authMiddleware, createRecipe);
+recipesRouter.post('/', authMiddleware, validateBodyMiddleware(recipesCreateSchema), createRecipe);

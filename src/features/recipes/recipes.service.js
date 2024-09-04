@@ -27,3 +27,7 @@ export const getRecipeById = async id => {
     ]
   });
 };
+
+export const createRecipes = async (name, description, image) => {
+  return Recipes.create({ name, description, image });
+};

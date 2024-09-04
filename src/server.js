@@ -11,6 +11,7 @@ import { areasRouter } from './features/areas/areas.routes.js';
 configEnvVars();
 
 const app = express();
+
 // parse application/json
 app.use(express.json());
 // cors

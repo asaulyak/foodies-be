@@ -1,7 +1,7 @@
 import { DataTypes, Model } from 'sequelize';
+import { sequelize } from '../../sequelize.js';
 import { Users } from '../users/users.entity.js';
 import { Recipes } from '../recipes/recipes.entity.js';
-import { sequelize } from '../../sequelize.js';
 
 export class UserFavorites extends Model {}
 
@@ -19,6 +19,7 @@ UserFavorites.init(
       type: DataTypes.UUID,
       references: {
         model: Recipes,
+        as: 'recipes',
         key: 'id'
       },
       primaryKey: true
@@ -26,3 +27,5 @@ UserFavorites.init(
   },
   { sequelize, modelName: 'userFavorites' }
 );
+
+UserFavorites.belongsTo(Recipes, { foreignKey: 'recipeId' });

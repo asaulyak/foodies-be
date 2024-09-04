@@ -1,3 +1,4 @@
+import { emailRegexp } from '../../../auth/auth.constants.js';
 import { DataTypes, fn } from 'sequelize';
 import { sequelize } from '../../sequelize.js';
 import { BaseEntity } from '../base.entity.js';
@@ -23,7 +24,14 @@ Users.init(
     email: {
       type: DataTypes.STRING,
       allowNull: false,
-      unique: true
+      unique: true,
+      validate: {
+        isEmail(value) {
+          if (!emailRegexp.test(value)) {
+            throw new Error('Email not validate');
+          }
+        }
+      }
     },
     token: {
       type: DataTypes.TEXT,

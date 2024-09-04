@@ -1,9 +1,9 @@
 import { HttpError } from '../../common/errors/http-error.js';
 import { comparePassword, createUser, getUserByEmail, updateUserById } from './users.service.js';
 import { sighToken } from '../../common/auth/auth.service.js';
-import ctrlWrapper from '../../common/decorators/ctrlWrapper.js';
+import { controllerWrapper } from '../../common/decorators/controller-wrapper.js';
 
-export const registerUser = ctrlWrapper(async (req, res, next) => {
+export const registerUser = controllerWrapper(async (req, res) => {
   const { email, password, name } = req.body;
   const existingUser = await getUserByEmail(email);
 
@@ -22,7 +22,7 @@ export const registerUser = ctrlWrapper(async (req, res, next) => {
   });
 });
 
-export const loginUser = ctrlWrapper(async (req, res, next) => {
+export const loginUser = controllerWrapper(async (req, res) => {
   const { email, password } = req.body;
   const user = await comparePassword(email, password);
 
@@ -49,7 +49,7 @@ export const loginUser = ctrlWrapper(async (req, res, next) => {
   });
 });
 
-export const getCurrent = ctrlWrapper((req, res) => {
+export const getCurrent = controllerWrapper((req, res) => {
   const user = req.user;
 
   if (!user) {

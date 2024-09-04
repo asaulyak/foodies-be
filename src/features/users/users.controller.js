@@ -1,6 +1,7 @@
 import { HttpError } from '../../common/errors/http-error.js';
 import { comparePassword, createUser, getUserByEmail, updateUserById } from './users.service.js';
 import { sighToken } from '../../common/auth/auth.service.js';
+import ctrlWrapper from '../../common/helpers/ctrlWrapper.js';
 
 export const registerUser = async (req, res, next) => {
   const { email, password, name } = req.body;
@@ -72,4 +73,10 @@ export const getCurrent = async (req, res, next) => {
   } catch (e) {
     next(e);
   }
+};
+
+export default {
+  registerUser: ctrlWrapper(registerUser),
+  loginUser: ctrlWrapper(loginUser),
+  getCurrent: ctrlWrapper(getCurrent)
 };

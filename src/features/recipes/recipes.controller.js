@@ -9,8 +9,7 @@ export const getById = async (req, res, next) => {
   }
 
   try {
-    // const recipe = await getRecipeById(id);
-    const recipe = {};
+    const recipe = await getRecipeById(id);
 
     if (!recipe) {
       return next(HttpError(404));
@@ -25,7 +24,6 @@ export const getById = async (req, res, next) => {
 export const getPopular = async (req, res, next) => {
   try {
     const popularRecipes = await getPopularRecipes();
-    console.log(popularRecipes);
     return res.json(popularRecipes);
   } catch (e) {
     next(e);

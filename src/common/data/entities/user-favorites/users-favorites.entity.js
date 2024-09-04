@@ -13,7 +13,7 @@ UserFavorites.init(
         model: Users,
         key: 'id'
       },
-      fore: true
+      primaryKey: true
     },
     recipeId: {
       type: DataTypes.UUID,

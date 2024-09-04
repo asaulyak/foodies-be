@@ -3,5 +3,5 @@ import { getById, getPopular } from './recipes.controller.js';
 
 export const recipesRouter = express.Router();
 
-recipesRouter.get('/:id', getById);
 recipesRouter.get('/popular', getPopular);
+recipesRouter.get('/:id', getById);

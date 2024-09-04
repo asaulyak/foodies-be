@@ -1,82 +1,62 @@
 import { HttpError } from '../../common/errors/http-error.js';
 import { comparePassword, createUser, getUserByEmail, updateUserById } from './users.service.js';
 import { sighToken } from '../../common/auth/auth.service.js';
-import ctrlWrapper from '../../common/helpers/ctrlWrapper.js';
+import ctrlWrapper from '../../common/decorators/ctrlWrapper.js';
 
-export const registerUser = async (req, res, next) => {
+export const registerUser = ctrlWrapper(async (req, res, next) => {
   const { email, password, name } = req.body;
+  const existingUser = await getUserByEmail(email);
 
-  try {
-    const existingUser = await getUserByEmail(email);
-
-    if (existingUser) {
-      return next(HttpError(409, 'Email in use'));
-    }
-
-    const user = await createUser({ email, password, name });
-
-    // TODO: Add more user fields if needed
-    res.status(201).json({
-      user: {
-        email,
-        name: user.name
-      }
-    });
-  } catch (e) {
-    next(e);
+  if (existingUser) {
+    throw HttpError(409, 'Email in use');
   }
-};
 
-export const loginUser = async (req, res, next) => {
+  const user = await createUser({ email, password, name });
+
+  // TODO: Add more user fields if needed
+  res.status(201).json({
+    user: {
+      email,
+      name: user.name
+    }
+  });
+});
+
+export const loginUser = ctrlWrapper(async (req, res, next) => {
   const { email, password } = req.body;
+  const user = await comparePassword(email, password);
 
-  try {
-    const user = await comparePassword(email, password);
-
-    if (!user) {
-      return next(HttpError(401, 'Email or password is wrong'));
-    }
-
-    // TODO: Extend user fields if needed
-    const userData = {
-      name: user.name,
-      email: user.email,
-      id: user.id
-    };
-
-    const token = sighToken(userData);
-
-    await updateUserById(user.id, {
-      token
-    });
-
-    return res.status(200).json({
-      token,
-      user: userData
-    });
-  } catch (e) {
-    next(HttpError(401, 'Email or password is wrong'));
+  if (!user) {
+    throw HttpError(401, 'Email or password is wrong');
   }
-};
 
-export const getCurrent = async (req, res, next) => {
-  try {
-    const user = req.user;
+  // TODO: Extend user fields if needed
+  const userData = {
+    name: user.name,
+    email: user.email,
+    id: user.id
+  };
 
-    if (!user) {
-      return next(HttpError(500));
-    }
+  const token = sighToken(userData);
 
-    const { email, name } = user;
+  await updateUserById(user.id, {
+    token
+  });
 
-    res.json({ email, name });
-  } catch (e) {
-    next(e);
+  return res.status(200).json({
+    token,
+    user: userData
+  });
+});
+
+export const getCurrent = ctrlWrapper((req, res) => {
+  const user = req.user;
+
+  if (!user) {
+    return next(HttpError(500));
   }
-};
 
-export default {
-  registerUser: ctrlWrapper(registerUser),
-  loginUser: ctrlWrapper(loginUser),
-  getCurrent: ctrlWrapper(getCurrent)
-};
+  const { email, name } = user;
+
+  res.json({ email, name });
+});

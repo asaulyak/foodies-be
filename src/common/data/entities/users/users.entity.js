@@ -1,4 +1,4 @@
-import { emailRegexp } from '../../../auth/authConstants.js';
+import { emailRegexp } from '../../../auth/auth.constants.js';
 import { DataTypes, fn } from 'sequelize';
 import { sequelize } from '../../sequelize.js';
 import { BaseEntity } from '../base.entity.js';

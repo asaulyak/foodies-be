@@ -3,4 +3,4 @@ import { getCategories } from './categories.controller.js';
 
 export const categoriesRouter = express.Router();
 
-categoriesRouter.get('/categories', getCategories);
+categoriesRouter.get('/', getCategories);

@@ -1,5 +1,5 @@
 import { HttpError } from '../../common/errors/http-error.js';
-import { comparePassword, createUser, getUserByEmail, updateUserById } from './users.service.js';
+import { comparePassword, createUser, getUserByEmail, updateUserById, listFollowers } from './users.service.js';
 import { sighToken } from '../../common/auth/auth.service.js';
 
 export const registerUser = async (req, res, next) => {
@@ -69,4 +69,12 @@ export const me = async (req, res, next) => {
 
   // TODO: Extend user fields if needed
   res.json({ email, name });
+};
+
+export const getFollowers = async (req, res) => {
+  const { id: currentUserId } = req.user;
+  const { page = 1, limit = 10 } = req.query;
+  const result = await listFollowers({ currentUserId }, { page, limit });
+
+  res.json(result);
 };

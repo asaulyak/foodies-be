@@ -30,6 +30,10 @@ export const getRecipeById = async id => {
   });
 };
 
+export const createRecipes = async body => {
+  return Recipes.create(body);
+};
+
 export const getPopularRecipes = async () => {
   const res = (
     await UserFavorites.findAll({

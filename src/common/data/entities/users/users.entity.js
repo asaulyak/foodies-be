@@ -1,7 +1,8 @@
-import { DataTypes, fn, Model } from 'sequelize';
+import { DataTypes, fn } from 'sequelize';
 import { sequelize } from '../../sequelize.js';
+import { BaseEntity } from '../base.entity.js';
 
-export class Users extends Model {}
+export class Users extends BaseEntity {}
 
 Users.init(
   {

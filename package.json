@@ -18,7 +18,8 @@
     "@redocly/cli": "^1.21.1",
     "husky": "^9.1.5",
     "lint-staged": "^15.2.10",
-    "nodemon": "^3.1.4"
+    "nodemon": "^3.1.4",
+    "prettier": "^3.3.3"
   },
   "lint-staged": {
     "*.{js}": [

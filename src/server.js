@@ -5,6 +5,7 @@ import { configEnvVars, ENV_CONFIG } from './common/config/index.js';
 import { userRouter } from './features/users/users.routes.js';
 import { healthRouter } from './features/health/health.routes.js';
 import { recipesRouter } from './features/recipes/recipes.routes.js';
+import { categoriesRouter } from './features/categories/categories.routes.js';
 
 configEnvVars();
 
@@ -18,6 +19,7 @@ app.use(cors());
 app.use('/api/users', userRouter);
 app.use('/api/health', healthRouter);
 app.use('/api/recipes', recipesRouter);
+app.use('/api/categories', categoriesRouter);
 
 app.use((_, res, __) => {
   res.status(404).json({

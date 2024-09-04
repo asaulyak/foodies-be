@@ -1,5 +1,6 @@
-import { getRecipeById } from './recipes.service.js';
+import { createRecipes, getRecipeById } from './recipes.service.js';
 import { HttpError } from '../../common/errors/http-error.js';
+import { fn } from 'sequelize';
 
 export const getById = async (req, res, next) => {
   const { id } = req.params;
@@ -21,13 +22,10 @@ export const getById = async (req, res, next) => {
   }
 };
 
-export const createRecipes = async (req, res, next) => {
-  const { name, description, image } = req.body;
-  if (!name || !description || !image) {
-    return next(HttpError(404));
-  }
+export const createRecipe = async (req, res, next) => {
   try {
-    const newRecipe = await createRecipes(name, description, image);
+    const user = req.user;
+    const newRecipe = await createRecipes({ ...req.body, ownerId: user.id });
 
     if (!newRecipe) {
       return next(HttpError(500));

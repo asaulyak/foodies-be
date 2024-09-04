@@ -28,6 +28,6 @@ export const getRecipeById = async id => {
   });
 };
 
-export const createRecipes = async (name, description, image) => {
-  return Recipes.create({ name, description, image });
+export const createRecipes = async body => {
+  return Recipes.create(body);
 };

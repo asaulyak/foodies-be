@@ -58,19 +58,6 @@ export const loginUser = async (req, res, next) => {
   }
 };
 
-export const me = async (req, res, next) => {
-  const user = req.user;
-
-  if (!user) {
-    return next(HttpError(500));
-  }
-
-  const { email, name } = user;
-
-  // TODO: Extend user fields if needed
-  res.json({ email, name });
-};
-
 export const getCurrent = async (req, res, next) => {
   try {
     const user = req.user;

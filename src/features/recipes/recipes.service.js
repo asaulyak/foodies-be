@@ -3,6 +3,7 @@ import { Ingredients } from '../../common/data/entities/ingredients/ingredients.
 import { Categories } from '../../common/data/entities/category/categories.entity.js';
 import { Areas } from '../../common/data/entities/areas/areas.entity.js';
 import { Users } from '../../common/data/entities/users/users.entity.js';
+import { UserFavorites } from '../../common/data/entities/user-favorites/users-favorites.entity.js';
 
 export const getRecipeById = async id => {
   return Recipes.findOne({
@@ -26,4 +27,13 @@ export const getRecipeById = async id => {
       }
     ]
   });
+};
+
+export const getPopularRecipes = async () => {
+  const res = await UserFavorites.findAll();
+  console.log(res);
+
+  const popular = [{ id: 1 }, { id: 2 }];
+  console.log(popular);
+  return popular;
 };

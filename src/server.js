@@ -1,5 +1,6 @@
 import express from 'express';
 import cors from 'cors';
+import morgan from 'morgan';
 import { sequelize } from './common/data/sequelize.js';
 import { configEnvVars, ENV_CONFIG } from './common/config/index.js';
 import { userRouter } from './features/users/users.routes.js';
@@ -9,7 +10,7 @@ import { recipesRouter } from './features/recipes/recipes.routes.js';
 configEnvVars();
 
 const app = express();
-
+app.use(morgan('tiny'));
 // parse application/json
 app.use(express.json());
 // cors

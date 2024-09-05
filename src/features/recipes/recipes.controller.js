@@ -1,4 +1,4 @@
-import { createRecipes, getPopularRecipes, getRecipeById } from './recipes.service.js';
+import { createRecipes, getPopularRecipes, getRecipeById, removeRecipe } from './recipes.service.js';
 import { HttpError } from '../../common/errors/http-error.js';
 import { fn } from 'sequelize';
 import { controllerWrapper } from '../../common/decorators/controller-wrapper.js';

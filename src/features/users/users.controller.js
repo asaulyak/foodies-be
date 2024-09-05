@@ -81,3 +81,12 @@ export const getFollowing = controllerWrapper(async (req, res) => {
 
   res.json(result);
 });
+
+export const signoutUser = controllerWrapper(async (req, res) => {
+  const { id } = req.user;
+  await updateUserById(id, { token: null });
+
+  res.json({
+    message: 'Signout success'
+  });
+});

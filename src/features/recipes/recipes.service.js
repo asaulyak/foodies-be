@@ -42,7 +42,8 @@ export const getPopularRecipes = async () => {
       order: [[sequelize.fn('count', sequelize.col('userFavorites.ownerId')), 'DESC']],
       include: [
         {
-          model: Recipes
+          model: Recipes,
+          as: 'recipe'
         }
       ],
       limit: 4

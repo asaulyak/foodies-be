@@ -6,7 +6,9 @@ import {
   getUserById,
   updateUserById,
   listFollowers,
-  listFollowing
+  listFollowing,
+  getUserSubscriptions,
+  addUserSubscriptions
 } from './users.service.js';
 import { signToken } from '../../common/auth/auth.service.js';
 
@@ -115,13 +117,14 @@ export const subscribeToUser = async (req, res, next) => {
       throw HttpError(400, 'You cannot subscribe to your own profile');
     }
     // Check if the user already exists in the system
-    const userToSubscribe = await User.findByPk(subscribedTo);
+    const userToSubscribe = await getUserById(subscribedTo);
     if (!userToSubscribe) {
       throw HttpError(404, 'User not found');
     }
 
     // Check if the subscription already exists
-    const existingSubscription = getUserSubscriptions({ currentUserId, subscribedTo });
+    const existingSubscription = await getUserSubscriptions({ currentUserId, subscribedTo });
+
     if (existingSubscription) {
       return res.status(400).json({ error: 'You are already subscribed to this user' });
     }

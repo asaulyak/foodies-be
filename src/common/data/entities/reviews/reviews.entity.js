@@ -23,6 +23,6 @@ Reviews.init(
   },
   {
     sequelize,
-    modelName: 'reviews'
+    modelName: 'testimonials'
   }
 );

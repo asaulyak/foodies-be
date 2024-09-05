@@ -167,26 +167,33 @@ export const listFollowing = async ({ currentUserId } = {}, { page, limit, offse
 };
 
 export const getDetailedInfo = async id => {
-  const userData = await Users.findByPk(id, {
-    attributes: ['avatar', 'name', 'email']
-  });
-
-  const totalRecipesCount = await Recipes.count({
-    where: {
-      ownerId: id
-    }
-  });
-
-  const totalFavoritesRecipesCount = await UserFavorites.count({
-    where: {
-      ownerId: id
-    }
-  });
-
-  const totalFollowersCount = await UserSubscriptions.count({ where: { ownerId: id } });
-
-  const totalFollowingsCount = await UserSubscriptions.count({ where: { subscribedTo: id } });
-
+  const [userData, totalRecipesCount, totalFavoritesRecipesCount, totalFollowersCount, totalFollowingsCount] =
+    await Promise.all([
+      Users.findByPk(id, {
+        attributes: ['avatar', 'name', 'email']
+      }),
+      Recipes.count({
+        where: {
+          ownerId: id
+        }
+      }),
+      UserFavorites.count({
+        where: {
+          ownerId: id
+        }
+      }),
+      UserSubscriptions.count({
+        where: {
+          subscribedTo: id
+        }
+      }),
+      UserSubscriptions.count({
+        where: {
+          ownerId: id
+        }
+      })
+    ]);
+  if (!userData) return userData; // Return null if user not found
   const info = {
     ...userData.dataValues,
     totalRecipes: totalRecipesCount,
@@ -194,5 +201,6 @@ export const getDetailedInfo = async id => {
     totalFollowers: totalFollowersCount,
     totalFollowings: totalFollowingsCount
   };
+
   return info;
 };

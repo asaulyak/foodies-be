@@ -93,8 +93,15 @@ export const getRecipes = controllerWrapper(async (req, res, next) => {
 });
 
 export const getInfo = controllerWrapper(async (req, res) => {
-  const { id } = req.params;
-  const result = await getDetailedInfo(id);
+  const userId = req.user.dataValues.id;
+  const { id: searchId } = req.params;
 
-  res.json(result);
+  const info = await getDetailedInfo(searchId);
+  if (!info) throw HttpError(404); //user not found with searchId
+
+  if (userId === searchId) {
+    return res.json(info);
+  }
+  const { totalFavoritesRecipes, totalFollowings, ...userInfo } = info;
+  res.json(userInfo);
 });

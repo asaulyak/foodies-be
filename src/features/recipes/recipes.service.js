@@ -3,7 +3,6 @@ import { Ingredients } from '../../common/data/entities/ingredients/ingredients.
 import { Categories } from '../../common/data/entities/category/categories.entity.js';
 import { Areas } from '../../common/data/entities/areas/areas.entity.js';
 import { RecipeIngredients } from '../../common/data/entities/recipes-ingredients/recipes-ingredients.entity.js';
-
 import { Users } from '../../common/data/entities/users/users.entity.js';
 import { UserFavorites } from '../../common/data/entities/users-favorites/users-favorites.entity.js';
 import { sequelize } from '../../common/data/sequelize.js';
@@ -44,6 +43,49 @@ export const getRecipeById = async id => {
 
 export const createRecipes = async body => {
   return Recipes.create(body);
+};
+
+export const getRecipesByFilter = (filter = {}) => {
+  const { categoryId, areaId, ingredientIds, limit, offset } = filter;
+
+  const include = [];
+
+  if (categoryId) {
+    include.push({
+      model: Categories,
+      where: {
+        id: categoryId
+      }
+    });
+  }
+
+  if (areaId) {
+    include.push({
+      model: Areas,
+      where: {
+        id: areaId
+      }
+    });
+  }
+
+  if (ingredientIds?.length) {
+    include.push({
+      model: Ingredients,
+      through: {
+        model: RecipeIngredients,
+        attributes: []
+      },
+      where: {
+        id: ingredientIds
+      }
+    });
+  }
+
+  return Recipes.findAll({
+    include,
+    limit,
+    offset
+  });
 };
 
 export const getPopularRecipes = async () => {

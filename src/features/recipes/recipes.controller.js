@@ -1,6 +1,11 @@
-import { createRecipes, getPopularRecipes, getRecipeById, removeRecipe } from './recipes.service.js';
+import {
+  createRecipes,
+  getRecipeById,
+  getPopularRecipes,
+  getRecipesByFilter,
+  removeRecipe
+} from './recipes.service.js';
 import { HttpError } from '../../common/errors/http-error.js';
-import { fn } from 'sequelize';
 
 export const getById = async (req, res, next) => {
   const { id } = req.params;
@@ -34,6 +39,15 @@ export const createRecipe = async (req, res, next) => {
   } catch (e) {
     next(e);
   }
+};
+
+export const searchRecipes = async (req, res) => {
+  const { categoryId, areaId, ingredientIds } = req.query;
+  const { limit, offset } = req.pagination;
+
+  const recipes = await getRecipesByFilter({ categoryId, areaId, ingredientIds, limit, offset });
+
+  res.json(recipes);
 };
 
 export const getPopular = async (req, res, next) => {

@@ -10,6 +10,7 @@ import {
 } from './users.service.js';
 import { controllerWrapper } from '../../common/decorators/controller-wrapper.js';
 import { signToken } from '../../common/auth/auth.service.js';
+import { listRecipes } from '../recipes/recipes.service.js';
 
 export const registerUser = controllerWrapper(async (req, res) => {
   const { email, password, name } = req.body;
@@ -55,11 +56,11 @@ export const loginUser = controllerWrapper(async (req, res) => {
   });
 });
 
-export const getCurrent = controllerWrapper((req, res, next) => {
+export const getCurrent = controllerWrapper((req, res) => {
   const user = req.user;
 
   if (!user) {
-    return next(HttpError(500));
+    throw HttpError(500);
   }
 
   const { email, name } = user;
@@ -79,6 +80,14 @@ export const getFollowing = controllerWrapper(async (req, res) => {
   const { id: currentUserId } = req.user;
   const { page, limit, offset } = req.pagination;
   const result = await listFollowing({ currentUserId }, { page, limit, offset });
+
+  res.json(result);
+});
+
+export const getRecipes = controllerWrapper(async (req, res, next) => {
+  const { id: currentUserId } = req.user;
+  const { page, limit, offset } = req.pagination;
+  const result = await listRecipes({ ownerId: currentUserId }, { page, limit, offset });
 
   res.json(result);
 });

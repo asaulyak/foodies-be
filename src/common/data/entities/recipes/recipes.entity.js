@@ -65,3 +65,9 @@ Recipes.belongsTo(Categories, {
 });
 
 Recipes.belongsToMany(Ingredients, { through: 'recipeIngredients' });
+
+Ingredients.belongsToMany(Recipes, { through: 'recipeIngredients' });
+
+Categories.hasMany(Recipes, {
+  foreignKey: 'id'
+});

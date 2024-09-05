@@ -6,6 +6,15 @@ import { Users } from '../../common/data/entities/users/users.entity.js';
 import { UserFavorites } from '../../common/data/entities/users-favorites/users-favorites.entity.js';
 import { sequelize } from '../../common/data/sequelize.js';
 
+export const listRecipes = async (query = {}, { page, limit, offset }) => {
+  return Recipes.findAll({
+    where: query,
+    page,
+    limit,
+    offset
+  });
+};
+
 export const getRecipeById = async id => {
   return Recipes.findOne({
     where: {

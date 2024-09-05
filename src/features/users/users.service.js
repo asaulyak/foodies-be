@@ -3,6 +3,7 @@ import bcrypt from 'bcrypt';
 import { Users } from '../../common/data/entities/users/users.entity.js';
 import { UserSubscriptions } from '../../common/data/entities/user-subscriptions/user-subscriptions.entity.js';
 import { Recipes } from '../../common/data/entities/recipes/recipes.entity.js';
+import { getRecipeById } from '../recipes/recipes.service.js';
 
 export const getUserByEmail = email => {
   return Users.findOne({

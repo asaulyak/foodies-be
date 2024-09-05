@@ -6,6 +6,7 @@ import {
   registerUser,
   getFollowers,
   getFollowing,
+  getRecipes,
   subscribeToUser
 } from './users.controller.js';
 import { validateBodyMiddleware } from '../../common/middleware/validate-body.middleware.js';
@@ -21,4 +22,5 @@ userRouter.post('/signin', validateBodyMiddleware(userLoginSchema), loginUser);
 userRouter.get('/current', authMiddleware, getCurrent);
 userRouter.get('/followers', authMiddleware, paginationMiddleware, getFollowers);
 userRouter.get('/following', authMiddleware, paginationMiddleware, getFollowing);
+userRouter.get('/recipes', authMiddleware, paginationMiddleware, getRecipes);
 userRouter.post('/subscribe', authMiddleware, validateBodyMiddleware(userSubscribeSchema), subscribeToUser);

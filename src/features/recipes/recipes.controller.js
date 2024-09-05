@@ -1,4 +1,4 @@
-import { createRecipes, getPopularRecipes, getRecipeById } from './recipes.service.js';
+import { createRecipes, getPopularRecipes, getRecipeById, removeRecipe } from './recipes.service.js';
 import { HttpError } from '../../common/errors/http-error.js';
 import { fn } from 'sequelize';
 
@@ -40,6 +40,21 @@ export const getPopular = async (req, res, next) => {
   try {
     const popularRecipes = await getPopularRecipes();
     return res.json(popularRecipes);
+  } catch (e) {
+    next(e);
+  }
+};
+export const deleteRecipe = async (req, res, next) => {
+  const { id } = req.params;
+  if (!id) {
+    return next(HttpError(404));
+  }
+  try {
+    const result = await removeRecipe(id);
+    if (!result) {
+      return next(HttpError(404));
+    }
+    res.status(200).json(result);
   } catch (e) {
     next(e);
   }

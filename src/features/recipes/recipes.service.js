@@ -2,6 +2,8 @@ import { Recipes } from '../../common/data/entities/recipes/recipes.entity.js';
 import { Ingredients } from '../../common/data/entities/ingredients/ingredients.entity.js';
 import { Categories } from '../../common/data/entities/category/categories.entity.js';
 import { Areas } from '../../common/data/entities/areas/areas.entity.js';
+import { RecipeIngredients } from '../../common/data/entities/recipes-ingredients/recipes-ingredients.entity.js';
+
 import { Users } from '../../common/data/entities/users/users.entity.js';
 import { UserFavorites } from '../../common/data/entities/users-favorites/users-favorites.entity.js';
 import { sequelize } from '../../common/data/sequelize.js';
@@ -61,4 +63,22 @@ export const getPopularRecipes = async () => {
   ).map(({ recipe }) => recipe);
 
   return res;
+};
+
+export const removeRecipe = async id => {
+  await RecipeIngredients.destroy({
+    where: {
+      recipeId: id
+    }
+  });
+  await UserFavorites.destroy({
+    where: {
+      recipeId: id
+    }
+  });
+  return Recipes.destroy({
+    where: {
+      id
+    }
+  });
 };

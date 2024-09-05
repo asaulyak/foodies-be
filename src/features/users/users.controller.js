@@ -1,5 +1,12 @@
 import { HttpError } from '../../common/errors/http-error.js';
-import { comparePassword, createUser, getUserByEmail, updateUserById, listFollowers } from './users.service.js';
+import {
+  comparePassword,
+  createUser,
+  getUserByEmail,
+  updateUserById,
+  listFollowers,
+  listFollowing
+} from './users.service.js';
 import { signToken } from '../../common/auth/auth.service.js';
 
 export const registerUser = async (req, res, next) => {
@@ -79,6 +86,18 @@ export const getFollowers = async (req, res, next) => {
     const { id: currentUserId } = req.user;
     const { page, limit, offset } = req.pagination;
     const result = await listFollowers({ currentUserId }, { page, limit, offset });
+
+    res.json(result);
+  } catch (e) {
+    next(e);
+  }
+};
+
+export const getFollowing = async (req, res, next) => {
+  try {
+    const { id: currentUserId } = req.user;
+    const { page, limit, offset } = req.pagination;
+    const result = await listFollowing({ currentUserId }, { page, limit, offset });
 
     res.json(result);
   } catch (e) {

@@ -6,6 +6,7 @@ import {
   removeRecipe
 } from './recipes.service.js';
 import { HttpError } from '../../common/errors/http-error.js';
+
 import { fn } from 'sequelize';
 import { controllerWrapper } from '../../common/decorators/controller-wrapper.js';
 
@@ -40,27 +41,25 @@ export const getPopular = controllerWrapper(async (req, res) => {
   return res.json(popularRecipes);
 });
 
-export const searchRecipes = async (req, res) => {
+export const searchRecipes = controllerWrapper(async (req, res) => {
   const { categoryId, areaId, ingredientIds } = req.query;
   const { limit, offset } = req.pagination;
 
   const recipes = await getRecipesByFilter({ categoryId, areaId, ingredientIds, limit, offset });
 
   res.json(recipes);
-};
+});
 
-export const deleteRecipe = async (req, res, next) => {
+export const deleteRecipe = controllerWrapper(async (req, res, next) => {
   const { id } = req.params;
   if (!id) {
     return next(HttpError(404));
   }
-  try {
-    const result = await removeRecipe(id);
-    if (!result) {
-      return next(HttpError(404));
-    }
-    res.sendStatus(204);
-  } catch (e) {
-    next(e);
+
+  const result = await removeRecipe(id);
+  if (!result) {
+    return next(HttpError(404));
   }
-};
+
+  res.sendStatus(204);
+});

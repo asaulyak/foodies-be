@@ -1,5 +1,12 @@
 import { HttpError } from '../../common/errors/http-error.js';
-import { comparePassword, createUser, getUserByEmail, listFollowing, updateUserById } from './users.service.js';
+import {
+  comparePassword,
+  createUser,
+  getUserByEmail,
+  listFollowers,
+  listFollowing,
+  updateUserById
+} from './users.service.js';
 import { controllerWrapper } from '../../common/decorators/controller-wrapper.js';
 import { signToken } from '../../common/auth/auth.service.js';
 
@@ -57,6 +64,14 @@ export const getCurrent = controllerWrapper((req, res, next) => {
   const { email, name } = user;
 
   res.json({ email, name });
+});
+
+export const getFollowers = controllerWrapper(async (req, res) => {
+  const { id: currentUserId } = req.user;
+  const { page, limit, offset } = req.pagination;
+  const result = await listFollowers({ currentUserId }, { page, limit, offset });
+
+  res.json(result);
 });
 
 export const getFollowing = controllerWrapper(async (req, res) => {

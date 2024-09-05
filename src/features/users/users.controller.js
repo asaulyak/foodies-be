@@ -5,9 +5,6 @@ import {
   getUserByEmail,
   listFollowers,
   listFollowing,
-  updateUserById,
-  listFollowers,
-  listFollowing,
   updateUserById
 } from './users.service.js';
 import { controllerWrapper } from '../../common/decorators/controller-wrapper.js';

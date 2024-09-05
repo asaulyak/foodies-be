@@ -54,7 +54,7 @@ export const deleteRecipe = async (req, res, next) => {
     if (!result) {
       return next(HttpError(404));
     }
-    res.status(204);
+    res.sendStatus(204);
   } catch (e) {
     next(e);
   }

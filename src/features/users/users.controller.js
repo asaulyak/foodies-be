@@ -1,6 +1,6 @@
 import { HttpError } from '../../common/errors/http-error.js';
 import { comparePassword, createUser, getUserByEmail, updateUserById } from './users.service.js';
-import { sighToken } from '../../common/auth/auth.service.js';
+import { signToken } from '../../common/auth/auth.service.js';
 
 export const registerUser = async (req, res, next) => {
   const { email, password, name } = req.body;
@@ -43,7 +43,7 @@ export const loginUser = async (req, res, next) => {
       id: user.id
     };
 
-    const token = sighToken(userData);
+    const token = signToken(userData);
 
     await updateUserById(user.id, {
       token

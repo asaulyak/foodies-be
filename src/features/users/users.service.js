@@ -167,7 +167,7 @@ export const listFollowing = async ({ currentUserId } = {}, { page, limit, offse
   };
 };
 
-export const getUserSubscriptions = async ({ currentUserId, subscribedTo }) => {
+export const getUserSubscription = async ({ currentUserId, subscribedTo }) => {
   return await UserSubscriptions.findOne({
     where: {
       ownerId: currentUserId,
@@ -176,7 +176,7 @@ export const getUserSubscriptions = async ({ currentUserId, subscribedTo }) => {
   });
 };
 
-export const addUserSubscriptions = async ({ currentUserId, subscribedTo }) => {
+export const addUserSubscription = async ({ currentUserId, subscribedTo }) => {
   return await UserSubscriptions.create({
     ownerId: currentUserId,
     subscribedTo: subscribedTo

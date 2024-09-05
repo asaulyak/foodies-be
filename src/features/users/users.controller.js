@@ -7,8 +7,8 @@ import {
   listFollowers,
   listFollowing,
   updateUserById,
-  getUserSubscriptions,
-  addUserSubscriptions
+  getUserSubscription,
+  addUserSubscription
 } from './users.service.js';
 import { controllerWrapper } from '../../common/decorators/controller-wrapper.js';
 import { signToken } from '../../common/auth/auth.service.js';
@@ -99,13 +99,13 @@ export const subscribeToUser = controllerWrapper(async (req, res) => {
   }
 
   // Check if the subscription already exists
-  const existingSubscription = await getUserSubscriptions({ currentUserId, subscribedTo });
+  const existingSubscription = await getUserSubscription({ currentUserId, subscribedTo });
 
   if (existingSubscription) {
     return res.status(400).json({ error: 'You are already subscribed to this user' });
   }
   // Create the subscription
-  const result = await addUserSubscriptions({ currentUserId, subscribedTo });
+  const result = await addUserSubscription({ currentUserId, subscribedTo });
 
   res.status(201).json(result);
 });

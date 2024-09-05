@@ -55,11 +55,11 @@ export const loginUser = controllerWrapper(async (req, res) => {
   });
 });
 
-export const getCurrent = controllerWrapper((req, res, next) => {
+export const getCurrent = controllerWrapper((req, res) => {
   const user = req.user;
 
   if (!user) {
-    return next(HttpError(500));
+    throw HttpError(500);
   }
 
   const { email, name } = user;

@@ -21,6 +21,7 @@ app.use('/api/users', userRouter);
 app.use('/api/health', healthRouter);
 app.use('/api/recipes', recipesRouter);
 app.use('/api/categories', categoriesRouter);
+app.use('/api/reviews');
 
 app.use((_, res, __) => {
   res.status(404).json({
@@ -57,3 +58,5 @@ sequelize
 
     process.exit(1);
   });
+
+export default app;

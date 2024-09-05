@@ -74,10 +74,14 @@ export const getCurrent = async (req, res, next) => {
   }
 };
 
-export const getFollowers = async (req, res) => {
-  const { id: currentUserId } = req.user;
-  const { page = 1, limit = 10 } = req.query;
-  const result = await listFollowers({ currentUserId }, { page, limit });
+export const getFollowers = async (req, res, next) => {
+  try {
+    const { id: currentUserId } = req.user;
+    const { page, limit, offset } = req.pagination;
+    const result = await listFollowers({ currentUserId }, { page, limit, offset });
 
-  res.json(result);
+    res.json(result);
+  } catch (e) {
+    next(e);
+  }
 };

@@ -9,6 +9,7 @@ import {
 } from './users.service.js';
 import { controllerWrapper } from '../../common/decorators/controller-wrapper.js';
 import { signToken } from '../../common/auth/auth.service.js';
+import { listRecipes } from '../recipes/recipes.service.js';
 
 export const registerUser = controllerWrapper(async (req, res) => {
   const { email, password, name } = req.body;
@@ -89,4 +90,12 @@ export const signoutUser = controllerWrapper(async (req, res) => {
   res.json({
     message: 'Signout success'
   });
+});
+
+export const getRecipes = controllerWrapper(async (req, res, next) => {
+  const { id: currentUserId } = req.user;
+  const { page, limit, offset } = req.pagination;
+  const result = await listRecipes({ ownerId: currentUserId }, { page, limit, offset });
+
+  res.json(result);
 });

@@ -1,46 +1,35 @@
 import { createRecipes, getPopularRecipes, getRecipeById } from './recipes.service.js';
 import { HttpError } from '../../common/errors/http-error.js';
 import { fn } from 'sequelize';
+import { controllerWrapper } from '../../common/decorators/controller-wrapper.js';
 
-export const getById = async (req, res, next) => {
+export const getById = controllerWrapper(async (req, res) => {
   const { id } = req.params;
 
   if (!id) {
-    return next(HttpError(404));
+    throw HttpError(404);
   }
 
-  try {
-    const recipe = await getRecipeById(id);
+  const recipe = await getRecipeById(id);
 
-    if (!recipe) {
-      return next(HttpError(404));
-    }
-
-    res.json(recipe);
-  } catch (e) {
-    next(e);
+  if (!recipe) {
+    throw HttpError(404);
   }
-};
 
-export const createRecipe = async (req, res, next) => {
-  try {
-    const user = req.user;
-    const newRecipe = await createRecipes({ ...req.body, ownerId: user.id });
+  res.json(recipe);
+});
 
-    if (!newRecipe) {
-      return next(HttpError(500));
-    }
-    res.status(201).json(newRecipe);
-  } catch (e) {
-    next(e);
+export const createRecipe = controllerWrapper(async (req, res) => {
+  const user = req.user;
+  const newRecipe = await createRecipes({ ...req.body, ownerId: user.id });
+
+  if (!newRecipe) {
+    throw HttpError(500);
   }
-};
+  res.status(201).json(newRecipe);
+});
 
-export const getPopular = async (req, res, next) => {
-  try {
-    const popularRecipes = await getPopularRecipes();
-    return res.json(popularRecipes);
-  } catch (e) {
-    next(e);
-  }
-};
+export const getPopular = controllerWrapper(async (req, res) => {
+  const popularRecipes = await getPopularRecipes();
+  return res.json(popularRecipes);
+});

@@ -3,6 +3,7 @@ import { Ingredients } from '../../common/data/entities/ingredients/ingredients.
 import { Categories } from '../../common/data/entities/category/categories.entity.js';
 import { Areas } from '../../common/data/entities/areas/areas.entity.js';
 import { Users } from '../../common/data/entities/users/users.entity.js';
+import { UserFavorites } from '../../common/data/entities/userFavorites/userFavorites.entity.js';
 
 export const getRecipeById = async id => {
   return Recipes.findOne({
@@ -30,4 +31,45 @@ export const getRecipeById = async id => {
 
 export const createRecipes = async body => {
   return Recipes.create(body);
+};
+
+export const addRecipeToFavorites = async (userId, id) => {
+  const user = await Users.findByPk(userId);
+  if (!user) {
+    return { error: 'User not found' };
+  }
+
+  const recipe = await Recipes.findByPk(id);
+  if (!recipe) {
+    return { error: 'Recipe not found' };
+  }
+
+  try {
+    const favorite = await UserFavorites.create({
+      ownerId: userId,
+      recipeId: id
+    });
+    return favorite;
+  } catch (error) {
+    return { error: error.message };
+  }
+};
+
+export const removeRecipeFromFavorites = async (userId, recipeId) => {
+  try {
+    const result = await UserFavorites.destroy({
+      where: {
+        ownerId: userId,
+        recipeId: recipeId
+      }
+    });
+
+    if (result === 0) {
+      return { error: 'Favorite entry not found' };
+    }
+
+    return { message: 'Recipe removed from favorites' };
+  } catch (error) {
+    return { error: error.message };
+  }
 };

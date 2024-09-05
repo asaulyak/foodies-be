@@ -102,7 +102,7 @@ export const subscribeToUser = controllerWrapper(async (req, res) => {
   const existingSubscription = await getUserSubscription({ currentUserId, subscribedTo });
 
   if (existingSubscription) {
-    return res.status(400).json({ error: 'You are already subscribed to this user' });
+    throw HttpError(409, 'You are already subscribed to this user');
   }
   // Create the subscription
   const result = await addUserSubscription({ currentUserId, subscribedTo });

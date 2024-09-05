@@ -60,3 +60,15 @@ export const getCurrent = controllerWrapper((req, res) => {
 
   res.json({ email, name });
 });
+
+export const getFollowing = async (req, res, next) => {
+  try {
+    const { id: currentUserId } = req.user;
+    const { page, limit, offset } = req.pagination;
+    const result = await listFollowing({ currentUserId }, { page, limit, offset });
+
+    res.json(result);
+  } catch (e) {
+    next(e);
+  }
+};

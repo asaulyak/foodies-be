@@ -7,6 +7,7 @@ import { healthRouter } from './features/health/health.routes.js';
 import { recipesRouter } from './features/recipes/recipes.routes.js';
 import { categoriesRouter } from './features/categories/categories.routes.js';
 import { areasRouter } from './features/areas/areas.routes.js';
+import { ingredientsRouter } from './features/ingredients/ingredients.routes.js';
 
 configEnvVars();
 
@@ -23,6 +24,7 @@ app.use('/api/health', healthRouter);
 app.use('/api/recipes', recipesRouter);
 app.use('/api/categories', categoriesRouter);
 app.use('/api/areas', areasRouter);
+app.use('/api/ingredients', ingredientsRouter);
 
 app.use((_, res, __) => {
   res.status(404).json({

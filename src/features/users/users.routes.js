@@ -1,10 +1,18 @@
 import express from 'express';
 import { userRegisterSchema } from './schemas/user-register.schema.js';
-import { getCurrent, loginUser, registerUser, getFollowers, getFollowing } from './users.controller.js';
+import {
+  getCurrent,
+  loginUser,
+  registerUser,
+  getFollowers,
+  getFollowing,
+  subscribeToUser
+} from './users.controller.js';
 import { validateBodyMiddleware } from '../../common/middleware/validate-body.middleware.js';
 import { userLoginSchema } from './schemas/user-login.schema.js';
 import { authMiddleware } from '../../common/middleware/auth.middleware.js';
 import { paginationMiddleware } from '../../common/middleware/pagination.middleware.js';
+import { userSubscribeSchema } from './schemas/user-subscribe.schema.js';
 
 export const userRouter = express.Router();
 
@@ -13,3 +21,4 @@ userRouter.post('/signin', validateBodyMiddleware(userLoginSchema), loginUser);
 userRouter.get('/current', authMiddleware, getCurrent);
 userRouter.get('/followers', authMiddleware, paginationMiddleware, getFollowers);
 userRouter.get('/following', authMiddleware, paginationMiddleware, getFollowing);
+userRouter.post('/subscribe', authMiddleware, validateBodyMiddleware(userSubscribeSchema), subscribeToUser);

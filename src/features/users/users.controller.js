@@ -3,6 +3,7 @@ import {
   comparePassword,
   createUser,
   getUserByEmail,
+  getUserById,
   updateUserById,
   listFollowers,
   listFollowing
@@ -100,6 +101,34 @@ export const getFollowing = async (req, res, next) => {
     const result = await listFollowing({ currentUserId }, { page, limit, offset });
 
     res.json(result);
+  } catch (e) {
+    next(e);
+  }
+};
+
+export const subscribeToUser = async (req, res, next) => {
+  try {
+    const { id: currentUserId } = req.user;
+    const { subscribedTo } = req.body;
+    // Check if the current user is trying to subscribe to their own profile
+    if (currentUserId === subscribedTo) {
+      throw HttpError(400, 'You cannot subscribe to your own profile');
+    }
+    // Check if the user already exists in the system
+    const userToSubscribe = await User.findByPk(subscribedTo);
+    if (!userToSubscribe) {
+      throw HttpError(404, 'User not found');
+    }
+
+    // Check if the subscription already exists
+    const existingSubscription = getUserSubscriptions({ currentUserId, subscribedTo });
+    if (existingSubscription) {
+      return res.status(400).json({ error: 'You are already subscribed to this user' });
+    }
+    // Create the subscription
+    const result = await addUserSubscriptions({ currentUserId, subscribedTo });
+
+    res.status(201).json(result);
   } catch (e) {
     next(e);
   }

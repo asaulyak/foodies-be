@@ -2,9 +2,18 @@ import cloudinary from '../config/cloudinary.config.js';
 import { HttpError } from '../errors/http-error.js';
 
 const options = {
+  use_filename: true,
   overwrite: true,
   transformation: [{ height: 600, width: 600, gravity: 'face', crop: 'thumb' }]
 };
+
+function extractFilename(url) {
+  const parts = url.split('/');
+  const filenameWithExt = parts.pop();
+  const fileName = filenameWithExt.split('.')[0];
+
+  return fileName;
+}
 
 const uploadAvatar = async imagePath => {
   try {
@@ -14,8 +23,9 @@ const uploadAvatar = async imagePath => {
   }
 };
 
-const deleteAvatar = async avatarPublicId => {
+const deleteAvatar = async avatarUrl => {
   try {
+    const avatarPublicId = extractFilename(avatarUrl);
     await cloudinary.uploader.destroy(avatarPublicId);
   } catch ({ status, message }) {
     throw HttpError(status, message);

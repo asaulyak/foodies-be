@@ -1,5 +1,5 @@
 import express from 'express';
-import { getById, searchRecipes, getPopular } from './recipes.controller.js';
+import { getById, searchRecipes, deleteRecipe, getPopular } from './recipes.controller.js';
 import { authMiddleware } from '../../common/middleware/auth.middleware.js';
 import { createRecipe } from './recipes.controller.js';
 import { recipesCreateSchema } from './schemas/recipes-create.schemas.js';
@@ -14,3 +14,4 @@ recipesRouter.get('/popular', getPopular);
 recipesRouter.get('/search', validateQueryStringMiddleware(recipesSearchSchema), paginationMiddleware, searchRecipes);
 recipesRouter.get('/:id', getById);
 recipesRouter.post('/', authMiddleware, validateBodyMiddleware(recipesCreateSchema), createRecipe);
+recipesRouter.delete('/:id', authMiddleware, deleteRecipe);

@@ -1,4 +1,10 @@
-import { createRecipes, getRecipeById, getPopularRecipes, getRecipesByFilter } from './recipes.service.js';
+import {
+  createRecipes,
+  getRecipeById,
+  getPopularRecipes,
+  getRecipesByFilter,
+  removeRecipe
+} from './recipes.service.js';
 import { HttpError } from '../../common/errors/http-error.js';
 
 export const getById = async (req, res, next) => {
@@ -48,6 +54,21 @@ export const getPopular = async (req, res, next) => {
   try {
     const popularRecipes = await getPopularRecipes();
     return res.json(popularRecipes);
+  } catch (e) {
+    next(e);
+  }
+};
+export const deleteRecipe = async (req, res, next) => {
+  const { id } = req.params;
+  if (!id) {
+    return next(HttpError(404));
+  }
+  try {
+    const result = await removeRecipe(id);
+    if (!result) {
+      return next(HttpError(404));
+    }
+    res.sendStatus(204);
   } catch (e) {
     next(e);
   }

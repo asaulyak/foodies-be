@@ -33,43 +33,39 @@ export const createRecipes = async body => {
   return Recipes.create(body);
 };
 
-export const addRecipeToFavorites = async (userId, id) => {
-  const user = await Users.findByPk(userId);
-  if (!user) {
-    return { error: 'User not found' };
-  }
+export const addRecipeToFavorites = async (userId, recipeId) => {
+  return UserFavorites.create({
+    ownerId: userId,
+    recipeId: recipeId
+  });
+};
 
+export const recipeExists = async id => {
   const recipe = await Recipes.findByPk(id);
-  if (!recipe) {
-    return { error: 'Recipe not found' };
-  }
+  return !!recipe;
+};
 
-  try {
-    const favorite = await UserFavorites.create({
+export const isRecipeFavorite = async (userId, recipeId) => {
+  const favorite = await UserFavorites.findOne({
+    where: {
       ownerId: userId,
-      recipeId: id
-    });
-    return favorite;
-  } catch (error) {
-    return { error: error.message };
-  }
+      recipeId: recipeId
+    }
+  });
+  return !!favorite;
 };
 
 export const removeRecipeFromFavorites = async (userId, recipeId) => {
-  try {
-    const result = await UserFavorites.destroy({
-      where: {
-        ownerId: userId,
-        recipeId: recipeId
-      }
-    });
-
-    if (result === 0) {
-      return { error: 'Favorite entry not found' };
+  const result = await UserFavorites.destroy({
+    where: {
+      ownerId: userId,
+      recipeId: recipeId
     }
+  });
 
-    return { message: 'Recipe removed from favorites' };
-  } catch (error) {
-    return { error: error.message };
+  if (result === 0) {
+    return { error: 'Favorite entry not found' };
   }
+
+  return { message: 'Recipe removed from favorites' };
 };

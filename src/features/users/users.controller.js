@@ -1,7 +1,7 @@
 import { HttpError } from '../../common/errors/http-error.js';
-import { comparePassword, createUser, getUserByEmail, updateUserById } from './users.service.js';
-import { sighToken } from '../../common/auth/auth.service.js';
+import { comparePassword, createUser, getUserByEmail, listFollowing, updateUserById } from './users.service.js';
 import { controllerWrapper } from '../../common/decorators/controller-wrapper.js';
+import { signToken } from '../../common/auth/auth.service.js';
 
 export const registerUser = controllerWrapper(async (req, res) => {
   const { email, password, name } = req.body;
@@ -13,7 +13,6 @@ export const registerUser = controllerWrapper(async (req, res) => {
 
   const user = await createUser({ email, password, name });
 
-  // TODO: Add more user fields if needed
   res.status(201).json({
     user: {
       email,
@@ -30,14 +29,13 @@ export const loginUser = controllerWrapper(async (req, res) => {
     throw HttpError(401, 'Email or password is wrong');
   }
 
-  // TODO: Extend user fields if needed
   const userData = {
     name: user.name,
     email: user.email,
     id: user.id
   };
 
-  const token = sighToken(userData);
+  const token = signToken(userData);
 
   await updateUserById(user.id, {
     token
@@ -49,7 +47,7 @@ export const loginUser = controllerWrapper(async (req, res) => {
   });
 });
 
-export const getCurrent = controllerWrapper((req, res) => {
+export const getCurrent = controllerWrapper((req, res, next) => {
   const user = req.user;
 
   if (!user) {
@@ -61,14 +59,10 @@ export const getCurrent = controllerWrapper((req, res) => {
   res.json({ email, name });
 });
 
-export const getFollowing = async (req, res, next) => {
-  try {
-    const { id: currentUserId } = req.user;
-    const { page, limit, offset } = req.pagination;
-    const result = await listFollowing({ currentUserId }, { page, limit, offset });
+export const getFollowing = controllerWrapper(async (req, res) => {
+  const { id: currentUserId } = req.user;
+  const { page, limit, offset } = req.pagination;
+  const result = await listFollowing({ currentUserId }, { page, limit, offset });
 
-    res.json(result);
-  } catch (e) {
-    next(e);
-  }
-};
+  res.json(result);
+});

@@ -1,4 +1,4 @@
-import { HttpError } from '../../common/errors/http-error';
+import { HttpError } from '../../common/errors/http-error.js';
 import { listReviews } from './review.service.js';
 
 export const getReviews = async (req, res, next) => {

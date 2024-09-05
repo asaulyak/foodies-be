@@ -80,20 +80,13 @@ export const getFollowing = controllerWrapper(async (req, res) => {
   const { page, limit, offset } = req.pagination;
   const result = await listFollowing({ currentUserId }, { page, limit, offset });
 
-    res.json(result);
-  } catch (e) {
-    next(e);
-  }
-};
+  res.json(result);
+});
 
-export const getRecipes = async (req, res, next) => {
-  try {
-    const { id: currentUserId } = req.user;
-    const { page, limit, offset } = req.pagination;
-    const result = await listRecipes({ ownerId: currentUserId }, { page, limit, offset });
+export const getRecipes = controllerWrapper(async (req, res, next) => {
+  const { id: currentUserId } = req.user;
+  const { page, limit, offset } = req.pagination;
+  const result = await listRecipes({ ownerId: currentUserId }, { page, limit, offset });
 
-    res.json(result);
-  } catch (e) {
-    next(e);
-  }
-};
+  res.json(result);
+});

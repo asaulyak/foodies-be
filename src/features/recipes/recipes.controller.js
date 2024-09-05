@@ -49,18 +49,14 @@ export const searchRecipes = controllerWrapper(async (req, res) => {
   res.json(recipes);
 });
 
-export const deleteRecipe = async (req, res, next) => {
+export const deleteRecipe = controllerWrapper(async (req, res, next) => {
   const { id } = req.params;
   if (!id) {
-    return next(HttpError(404));
+    throw HttpError(404);
   }
-  try {
-    const result = await removeRecipe(id);
-    if (!result) {
-      return next(HttpError(404));
-    }
-    res.sendStatus(204);
-  } catch (e) {
-    next(e);
+  const result = await removeRecipe(id);
+  if (!result) {
+    throw HttpError(404);
   }
-};
+  res.sendStatus(204);
+});

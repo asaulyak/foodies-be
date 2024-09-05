@@ -56,16 +56,10 @@ export const isRecipeFavorite = async (userId, recipeId) => {
 };
 
 export const removeRecipeFromFavorites = async (userId, recipeId) => {
-  const result = await UserFavorites.destroy({
+  return UserFavorites.destroy({
     where: {
       ownerId: userId,
       recipeId: recipeId
     }
   });
-
-  if (result === 0) {
-    return { error: 'Favorite entry not found' };
-  }
-
-  return { message: 'Recipe removed from favorites' };
 };

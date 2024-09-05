@@ -70,13 +70,12 @@ export const removeFromFavorites = async (req, res, next) => {
     const { id } = req.params;
     const userId = req.user.id;
 
-    const result = await removeRecipeFromFavorites(userId, id);
-
-    if (result.error) {
-      return next(HttpError(500, result.error));
+    const recipeFound = await isRecipeFavorite(userId, id);
+    if (!recipeFound) {
+      return next(HttpError(404, 'Recipe not found'));
     }
-
-    res.json(result);
+    await removeRecipeFromFavorites(userId, id);
+    res.status(204);
   } catch (e) {
     next(e);
   }

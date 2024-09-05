@@ -9,13 +9,11 @@ UserSubscriptions.init(
   {
     ownerId: {
       type: DataTypes.UUID,
-      defaultValue: fn('uuid_generate_v4'),
       allowNull: false,
       primaryKey: true
     },
     subscribedTo: {
       type: DataTypes.UUID,
-      defaultValue: fn('uuid_generate_v4'),
       allowNull: false,
       primaryKey: true
     }
@@ -23,11 +21,11 @@ UserSubscriptions.init(
   { sequelize, modelName: 'userSubscriptions' }
 );
 
-UserSubscriptions.belongsTo(Users, { foreignKey: 'ownerId', as: 'Follower' });
-UserSubscriptions.belongsTo(Users, { foreignKey: 'subscribedTo', as: 'Following' });
+UserSubscriptions.belongsTo(Users, { foreignKey: 'ownerId', as: 'follower' });
+UserSubscriptions.belongsTo(Users, { foreignKey: 'subscribedTo', as: 'following' });
 
-Users.hasMany(UserSubscriptions, { foreignKey: 'ownerId', as: 'Subscriptions' });
-Users.hasMany(UserSubscriptions, { foreignKey: 'subscribedTo', as: 'Followers' });
+Users.hasMany(UserSubscriptions, { foreignKey: 'ownerId', as: 'subscriptions' });
+Users.hasMany(UserSubscriptions, { foreignKey: 'subscribedTo', as: 'followers' });
 
-Recipes.belongsTo(Users, { foreignKey: 'ownerId', as: 'Author' });
-Users.hasMany(Recipes, { foreignKey: 'ownerId', as: 'Recipes' });
+Recipes.belongsTo(Users, { foreignKey: 'ownerId', as: 'author' });
+Users.hasMany(Recipes, { foreignKey: 'ownerId', as: 'recipes' });

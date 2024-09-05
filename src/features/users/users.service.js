@@ -86,12 +86,12 @@ export const listFollowers = async ({ currentUserId } = {}, { page = 1, limit = 
     include: [
       {
         model: Users,
-        as: 'Follower',
+        as: 'follower',
         attributes: ['id', 'name'], // Select desired user attributes
         include: [
           {
             model: Recipes,
-            as: 'Recipes', // Include recipes created by each follower
+            as: 'recipes', // Include recipes created by each follower
             attributes: ['id', 'thumb'] // Select desired recipe attributes
           }
         ]
@@ -103,9 +103,9 @@ export const listFollowers = async ({ currentUserId } = {}, { page = 1, limit = 
 
   // Format results to include followers with recipes
   const followersWithRecipes = followers.map(follower => ({
-    id: follower.Follower.id,
-    name: follower.Follower.name,
-    recipes: follower.Follower.Recipes
+    id: follower.follower.id,
+    name: follower.follower.name,
+    recipes: follower.follower.recipes
   }));
 
   return {

@@ -5,7 +5,6 @@ export const listCategories = (pagination = {}) => {
 
   const normalizedLimit = Number(limit);
   const offset = (Number(page) - 1) * normalizedLimit;
-  console.log(`Page: ${page}, Limit: ${limit}`);
   return Categories.findAll({
     offset,
     limit: normalizedLimit

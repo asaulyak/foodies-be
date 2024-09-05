@@ -1,6 +1,6 @@
 import { HttpError } from '../../common/errors/http-error.js';
-import { comparePassword, createUser, getUserByEmail, updateUserById } from './users.service.js';
-import { sighToken } from '../../common/auth/auth.service.js';
+import { comparePassword, createUser, getUserByEmail, updateUserById, listFollowers } from './users.service.js';
+import { signToken } from '../../common/auth/auth.service.js';
 
 export const registerUser = async (req, res, next) => {
   const { email, password, name } = req.body;
@@ -43,7 +43,7 @@ export const loginUser = async (req, res, next) => {
       id: user.id
     };
 
-    const token = sighToken(userData);
+    const token = signToken(userData);
 
     await updateUserById(user.id, {
       token
@@ -58,15 +58,30 @@ export const loginUser = async (req, res, next) => {
   }
 };
 
-export const me = async (req, res, next) => {
-  const user = req.user;
+export const getCurrent = async (req, res, next) => {
+  try {
+    const user = req.user;
 
-  if (!user) {
-    return next(HttpError(500));
+    if (!user) {
+      return next(HttpError(500));
+    }
+
+    const { email, name } = user;
+
+    res.json({ email, name });
+  } catch (e) {
+    next(e);
   }
+};
 
-  const { email, name } = user;
+export const getFollowers = async (req, res, next) => {
+  try {
+    const { id: currentUserId } = req.user;
+    const { page, limit, offset } = req.pagination;
+    const result = await listFollowers({ currentUserId }, { page, limit, offset });
 
-  // TODO: Extend user fields if needed
-  res.json({ email, name });
+    res.json(result);
+  } catch (e) {
+    next(e);
+  }
 };

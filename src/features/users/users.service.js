@@ -3,6 +3,8 @@ import bcrypt from 'bcrypt';
 import { Users } from '../../common/data/entities/users/users.entity.js';
 import { UserSubscriptions } from '../../common/data/entities/user-subscriptions/user-subscriptions.entity.js';
 import { Recipes } from '../../common/data/entities/recipes/recipes.entity.js';
+import { UserFavorites } from '../../common/data/entities/users-favorites/users-favorites.entity.js';
+import { sequelize } from '../../common/data/sequelize.js';
 
 export const getUserByEmail = email => {
   return Users.findOne({
@@ -161,4 +163,35 @@ export const listFollowing = async ({ currentUserId } = {}, { page, limit, offse
     page,
     limit
   };
+};
+
+export const getDetailedInfo = async id => {
+  const userData = await Users.findByPk(id, {
+    attributes: ['avatar', 'name', 'email']
+  });
+
+  const totalRecipesCount = await Recipes.count({
+    where: {
+      ownerId: id
+    }
+  });
+
+  const totalFavoritesRecipesCount = await UserFavorites.count({
+    where: {
+      ownerId: id
+    }
+  });
+
+  const totalFollowersCount = await UserSubscriptions.count({ where: { ownerId: id } });
+
+  const totalFollowingsCount = await UserSubscriptions.count({ where: { subscribedTo: id } });
+
+  const info = {
+    ...userData.dataValues,
+    totalRecipes: totalRecipesCount,
+    totalFavoritesRecipes: totalFavoritesRecipesCount,
+    totalFollowers: totalFollowersCount,
+    totalFollowings: totalFollowingsCount
+  };
+  return info;
 };

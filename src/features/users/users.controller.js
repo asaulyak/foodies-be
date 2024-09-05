@@ -5,7 +5,8 @@ import {
   getUserByEmail,
   listFollowers,
   listFollowing,
-  updateUserById
+  updateUserById,
+  getDetailedInfo
 } from './users.service.js';
 import { controllerWrapper } from '../../common/decorators/controller-wrapper.js';
 import { signToken } from '../../common/auth/auth.service.js';
@@ -78,6 +79,13 @@ export const getFollowing = controllerWrapper(async (req, res) => {
   const { id: currentUserId } = req.user;
   const { page, limit, offset } = req.pagination;
   const result = await listFollowing({ currentUserId }, { page, limit, offset });
+
+  res.json(result);
+});
+
+export const getInfo = controllerWrapper(async (req, res) => {
+  const { id } = req.params;
+  const result = await getDetailedInfo(id);
 
   res.json(result);
 });

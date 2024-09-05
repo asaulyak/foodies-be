@@ -4,135 +4,108 @@ import {
   createUser,
   getUserByEmail,
   getUserById,
-  updateUserById,
   listFollowers,
   listFollowing,
+  updateUserById,
   getUserSubscriptions,
   addUserSubscriptions
 } from './users.service.js';
+import { controllerWrapper } from '../../common/decorators/controller-wrapper.js';
 import { signToken } from '../../common/auth/auth.service.js';
 
-export const registerUser = async (req, res, next) => {
+export const registerUser = controllerWrapper(async (req, res) => {
   const { email, password, name } = req.body;
+  const existingUser = await getUserByEmail(email);
 
-  try {
-    const existingUser = await getUserByEmail(email);
-
-    if (existingUser) {
-      return next(HttpError(409, 'Email in use'));
-    }
-
-    const user = await createUser({ email, password, name });
-
-    // TODO: Add more user fields if needed
-    res.status(201).json({
-      user: {
-        email,
-        name: user.name
-      }
-    });
-  } catch (e) {
-    next(e);
+  if (existingUser) {
+    throw HttpError(409, 'Email in use');
   }
-};
 
-export const loginUser = async (req, res, next) => {
+  const user = await createUser({ email, password, name });
+
+  res.status(201).json({
+    user: {
+      email,
+      name: user.name
+    }
+  });
+});
+
+export const loginUser = controllerWrapper(async (req, res) => {
   const { email, password } = req.body;
+  const user = await comparePassword(email, password);
 
-  try {
-    const user = await comparePassword(email, password);
-
-    if (!user) {
-      return next(HttpError(401, 'Email or password is wrong'));
-    }
-
-    // TODO: Extend user fields if needed
-    const userData = {
-      name: user.name,
-      email: user.email,
-      id: user.id
-    };
-
-    const token = signToken(userData);
-
-    await updateUserById(user.id, {
-      token
-    });
-
-    return res.status(200).json({
-      token,
-      user: userData
-    });
-  } catch (e) {
-    next(HttpError(401, 'Email or password is wrong'));
+  if (!user) {
+    throw HttpError(401, 'Email or password is wrong');
   }
-};
 
-export const getCurrent = async (req, res, next) => {
-  try {
-    const user = req.user;
+  const userData = {
+    name: user.name,
+    email: user.email,
+    id: user.id
+  };
 
-    if (!user) {
-      return next(HttpError(500));
-    }
+  const token = signToken(userData);
 
-    const { email, name } = user;
+  await updateUserById(user.id, {
+    token
+  });
 
-    res.json({ email, name });
-  } catch (e) {
-    next(e);
+  return res.status(200).json({
+    token,
+    user: userData
+  });
+});
+
+export const getCurrent = controllerWrapper((req, res, next) => {
+  const user = req.user;
+
+  if (!user) {
+    return next(HttpError(500));
   }
-};
 
-export const getFollowers = async (req, res, next) => {
-  try {
-    const { id: currentUserId } = req.user;
-    const { page, limit, offset } = req.pagination;
-    const result = await listFollowers({ currentUserId }, { page, limit, offset });
+  const { email, name } = user;
 
-    res.json(result);
-  } catch (e) {
-    next(e);
+  res.json({ email, name });
+});
+
+export const getFollowers = controllerWrapper(async (req, res) => {
+  const { id: currentUserId } = req.user;
+  const { page, limit, offset } = req.pagination;
+  const result = await listFollowers({ currentUserId }, { page, limit, offset });
+
+  res.json(result);
+});
+
+export const getFollowing = controllerWrapper(async (req, res) => {
+  const { id: currentUserId } = req.user;
+  const { page, limit, offset } = req.pagination;
+  const result = await listFollowing({ currentUserId }, { page, limit, offset });
+
+  res.json(result);
+});
+
+export const subscribeToUser = controllerWrapper(async (req, res) => {
+  const { id: currentUserId } = req.user;
+  const { subscribedTo } = req.body;
+  // Check if the current user is trying to subscribe to their own profile
+  if (currentUserId === subscribedTo) {
+    throw HttpError(400, 'You cannot subscribe to your own profile');
   }
-};
-
-export const getFollowing = async (req, res, next) => {
-  try {
-    const { id: currentUserId } = req.user;
-    const { page, limit, offset } = req.pagination;
-    const result = await listFollowing({ currentUserId }, { page, limit, offset });
-
-    res.json(result);
-  } catch (e) {
-    next(e);
+  // Check if the user already exists in the system
+  const userToSubscribe = await getUserById(subscribedTo);
+  if (!userToSubscribe) {
+    throw HttpError(404, 'User not found');
   }
-};
 
-export const subscribeToUser = async (req, res, next) => {
-  try {
-    const { id: currentUserId } = req.user;
-    const { subscribedTo } = req.body;
-    // Check if the current user is trying to subscribe to their own profile
-    if (currentUserId === subscribedTo) {
-      throw HttpError(400, 'You cannot subscribe to your own profile');
-    }
-    // Check if the user already exists in the system
-    const userToSubscribe = await getUserById(subscribedTo);
-    if (!userToSubscribe) {
-      throw HttpError(404, 'User not found');
-    }
+  // Check if the subscription already exists
+  const existingSubscription = await getUserSubscriptions({ currentUserId, subscribedTo });
 
-    // Check if the subscription already exists
-    const existingSubscription = await getUserSubscriptions({ currentUserId, subscribedTo });
-
-    if (existingSubscription) {
-      return res.status(400).json({ error: 'You are already subscribed to this user' });
-    }
-    // Create the subscription
-    const result = await addUserSubscriptions({ currentUserId, subscribedTo });
-
-    res.status(201).json(result);
-  } catch (e) {
-    next(e);
+  if (existingSubscription) {
+    return res.status(400).json({ error: 'You are already subscribed to this user' });
   }
-};
+  // Create the subscription
+  const result = await addUserSubscriptions({ currentUserId, subscribedTo });
+
+  res.status(201).json(result);
+});

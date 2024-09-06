@@ -45,6 +45,37 @@ export const createRecipes = async body => {
   return Recipes.create(body);
 };
 
+export const addRecipeToFavorites = async (userId, recipeId) => {
+  return UserFavorites.create({
+    ownerId: userId,
+    recipeId: recipeId
+  });
+};
+
+export const recipeExists = async id => {
+  const recipe = await Recipes.findByPk(id);
+  return !!recipe;
+};
+
+export const isRecipeFavorite = async (userId, recipeId) => {
+  const favorite = await UserFavorites.findOne({
+    where: {
+      ownerId: userId,
+      recipeId: recipeId
+    }
+  });
+  return !!favorite;
+};
+
+export const removeRecipeFromFavorites = async (userId, recipeId) => {
+  return UserFavorites.destroy({
+    where: {
+      ownerId: userId,
+      recipeId: recipeId
+    }
+  });
+};
+
 export const getRecipesByFilter = (filter = {}) => {
   const { categoryId, areaId, ingredientIds, limit, offset } = filter;
 

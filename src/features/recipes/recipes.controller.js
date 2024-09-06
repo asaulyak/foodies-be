@@ -1,20 +1,22 @@
 import {
   createRecipes,
   getRecipeById,
+  addRecipeToFavorites,
+  removeRecipeFromFavorites,
+  recipeExists,
+  isRecipeFavorite,
   getPopularRecipes,
   getRecipesByFilter,
   removeRecipe
 } from './recipes.service.js';
 import { HttpError } from '../../common/errors/http-error.js';
-
-import { fn } from 'sequelize';
 import { controllerWrapper } from '../../common/decorators/controller-wrapper.js';
 
 export const getById = controllerWrapper(async (req, res) => {
   const { id } = req.params;
 
   if (!id) {
-    throw HttpError(404);
+    return next(HttpError(404));
   }
 
   const recipe = await getRecipeById(id);
@@ -61,3 +63,41 @@ export const deleteRecipe = controllerWrapper(async (req, res, next) => {
     return next(HttpError(404));
   }
 });
+
+export const addToFavorites = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const userId = req.user.id;
+
+    const recipeFound = await recipeExists(id);
+    if (!recipeFound) {
+      return next(HttpError(404, 'Recipe not found'));
+    }
+
+    const alreadyFavorite = await isRecipeFavorite(userId, id);
+    if (alreadyFavorite) {
+      return next(HttpError(409, 'Recipe already in favorites'));
+    }
+
+    const favorite = await addRecipeToFavorites(userId, id);
+    res.status(201).json(favorite);
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const removeFromFavorites = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const userId = req.user.id;
+
+    const recipeFound = await isRecipeFavorite(userId, id);
+    if (!recipeFound) {
+      return next(HttpError(404, 'Recipe not found'));
+    }
+    await removeRecipeFromFavorites(userId, id);
+    res.status(204);
+  } catch (e) {
+    next(e);
+  }
+};

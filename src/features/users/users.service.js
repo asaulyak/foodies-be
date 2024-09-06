@@ -76,7 +76,7 @@ export const updateUserById = async (id, data) => {
   });
 };
 
-export const listFollowers = async ({ currentUserId } = {}, { page, limit, offset }) => {
+export const listFollowers = async ({ currentUserId, page, limit, offset }) => {
   // Get the total count of followers
   const totalFollowersCount = await UserSubscriptions.count({
     where: {
@@ -117,7 +117,7 @@ export const listFollowers = async ({ currentUserId } = {}, { page, limit, offse
 
   return {
     followers: followersWithRecipes,
-    totalFollowers: totalFollowersCount,
+    total: totalFollowersCount,
     page,
     limit
   };

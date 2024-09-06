@@ -75,7 +75,7 @@ export const getCurrent = controllerWrapper((req, res) => {
 export const getFollowers = controllerWrapper(async (req, res) => {
   const { id: currentUserId } = req.user;
   const { page, limit, offset } = req.pagination;
-  const result = await listFollowers({ currentUserId }, { page, limit, offset });
+  const result = await listFollowers({ currentUserId, page, limit, offset });
 
   res.json(result);
 });

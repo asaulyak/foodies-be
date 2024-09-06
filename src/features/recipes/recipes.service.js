@@ -155,3 +155,13 @@ export const removeRecipe = async id => {
     }
   });
 };
+
+export const listFavorites = async ({ userId }, { page, limit, offset }) => {
+  return UserFavorites.findAll({
+    where: {
+      ownerId: userId
+    },
+    limit,
+    offset
+  });
+};

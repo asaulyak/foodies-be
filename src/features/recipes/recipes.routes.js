@@ -6,7 +6,8 @@ import {
   getPopular,
   removeFromFavorites,
   createRecipe,
-  addToFavorites
+  addToFavorites,
+  getFavorites
 } from './recipes.controller.js';
 import { authMiddleware } from '../../common/middleware/auth.middleware.js';
 import { recipesCreateSchema } from './schemas/recipes-create.schemas.js';
@@ -25,3 +26,4 @@ recipesRouter.post('/', authMiddleware, validateBodyMiddleware(recipesCreateSche
 recipesRouter.post('/:id/favorites', authMiddleware, addToFavorites);
 recipesRouter.delete('/:id/favorites', authMiddleware, removeFromFavorites);
 recipesRouter.delete('/:id', authMiddleware, deleteRecipe);
+recipesRouter.get('/:id/favorites', authMiddleware, getFavorites);

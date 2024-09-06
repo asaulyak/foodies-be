@@ -1,6 +1,9 @@
 import gravatar from 'gravatar';
 import bcrypt from 'bcrypt';
 import { Users } from '../../common/data/entities/users/users.entity.js';
+import { UserSubscriptions } from '../../common/data/entities/user-subscriptions/user-subscriptions.entity.js';
+import { Recipes } from '../../common/data/entities/recipes/recipes.entity.js';
+import { getRecipeById } from '../recipes/recipes.service.js';
 
 export const getUserByEmail = email => {
   return Users.findOne({
@@ -65,4 +68,98 @@ export const updateUserById = async (id, data) => {
       id
     }
   });
+};
+
+export const listFollowers = async ({ currentUserId } = {}, { page, limit, offset }) => {
+  // Get the total count of followers
+  const totalFollowersCount = await UserSubscriptions.count({
+    where: {
+      subscribedTo: currentUserId // Count followers of the current user
+    }
+  });
+
+  const followers = await UserSubscriptions.findAll({
+    where: {
+      subscribedTo: currentUserId // Find users who follow the current user
+    },
+    include: [
+      {
+        model: Users,
+        as: 'follower',
+        attributes: ['id', 'name'], // Select desired user attributes
+        include: [
+          {
+            model: Recipes,
+            as: 'recipes', // Include recipes created by each follower
+            attributes: ['id', 'thumb'], // Select desired recipe attributes
+            limit: 4, // Limit to the last 4 recipes
+            order: [['createdAt', 'DESC']] // Order by creation date (newest first)
+          }
+        ]
+      }
+    ],
+    limit,
+    offset
+  });
+
+  // Format results to include followers with recipes
+  const followersWithRecipes = followers.map(follower => ({
+    id: follower.follower.id,
+    name: follower.follower.name,
+    recipes: follower.follower.recipes
+  }));
+
+  return {
+    followers: followersWithRecipes,
+    totalFollowers: totalFollowersCount,
+    page,
+    limit
+  };
+};
+
+export const listFollowing = async ({ currentUserId } = {}, { page, limit, offset }) => {
+  // Get the total count of following
+  const totalFollowingsCount = await UserSubscriptions.count({
+    where: {
+      ownerId: currentUserId // Count following of the current user
+    }
+  });
+
+  const following = await UserSubscriptions.findAll({
+    where: {
+      ownerId: currentUserId // Find users that the current user is following
+    },
+    include: [
+      {
+        model: Users,
+        as: 'following',
+        attributes: ['id', 'name'], // Select desired user attributes
+        include: [
+          {
+            model: Recipes,
+            as: 'recipes', // Include recipes created by each following
+            attributes: ['id', 'thumb'], // Select desired recipe attributes
+            limit: 4, // Limit to the last 4 recipes
+            order: [['createdAt', 'DESC']] // Order by creation date (newest first)
+          }
+        ]
+      }
+    ],
+    limit,
+    offset
+  });
+
+  // Format results to include followers with recipes
+  const followingsWithRecipes = following.map(following => ({
+    id: following.following.id,
+    name: following.following.name,
+    recipes: following.following.recipes
+  }));
+
+  return {
+    following: followingsWithRecipes,
+    totalFollowings: totalFollowingsCount,
+    page,
+    limit
+  };
 };

@@ -1,16 +1,17 @@
 import cloudinary from '../config/cloudinary.config.js';
 import { HttpError } from '../errors/http-error.js';
 
+const folder = 'foodies_avatars';
+
 const options = {
-  use_filename: true,
-  overwrite: true,
+  folder,
   transformation: [{ height: 600, width: 600, gravity: 'face', crop: 'thumb' }]
 };
 
 function extractFilename(url) {
   const parts = url.split('/');
   const filenameWithExt = parts.pop();
-  const fileName = filenameWithExt.split('.')[0];
+  const fileName = `${folder}/${filenameWithExt.split('.')[0]}`;
 
   return fileName;
 }
@@ -32,4 +33,4 @@ const deleteAvatar = async avatarUrl => {
   }
 };
 
-export { uploadAvatar, deleteAvatar };
+export default { uploadAvatar, deleteAvatar };

@@ -265,6 +265,15 @@ export const listFavorites = async ({ ownerId, limit, offset }) => {
       ownerId
     },
     limit,
-    offset
+    offset,
+    include: [
+      {
+        model: Recipes,
+        as: 'recipe',
+        attributes: ['id', 'title', 'instructions', 'description', 'thumb', 'time', 'categoryId', 'areaId', 'ownerId'],
+        limit: 9,
+        order: [['createdAt', 'DESC']]
+      }
+    ]
   });
 };

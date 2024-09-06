@@ -169,9 +169,7 @@ export const unsubscribeFromUser = controllerWrapper(async (req, res) => {
 });
 
 export const getFavorites = controllerWrapper(async (req, res) => {
-  const { id } = req.params;
   const userId = req.user.id;
-  console.log('USERID:', userId);
 
   const { limit, offset } = req.pagination;
   const favorites = await listFavorites({ ownerId: userId, limit, offset });

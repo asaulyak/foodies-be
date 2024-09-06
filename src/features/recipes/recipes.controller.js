@@ -107,6 +107,8 @@ export const getFavorites = controllerWrapper(async (req, res) => {
   const { id } = req.params;
   const userId = req.user.id;
 
-  const favorites = await listFavorites(userId, id);
+  const { limit, offset } = req.pagination;
+  const favorites = await listFavorites({ ownerId: userId, limit, offset });
+
   return res.json(favorites);
 });

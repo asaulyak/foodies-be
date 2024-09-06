@@ -103,14 +103,10 @@ export const removeFromFavorites = async (req, res, next) => {
   }
 };
 
-export const getFavorites = async (req, res, next) => {
-  try {
-    const { id } = req.params;
-    const userId = req.user.id;
+export const getFavorites = controllerWrapper(async (req, res) => {
+  const { id } = req.params;
+  const userId = req.user.id;
 
-    const favorites = await listFavorites(userId, id);
-    res.json(favorites);
-  } catch (e) {
-    next(e);
-  }
-};
+  const favorites = await listFavorites(userId, id);
+  return res.json(favorites);
+});

@@ -8,9 +8,9 @@ import {
   getFollowing,
   signoutUser,
   getRecipes,
+  getInfo,
   subscribeToUser
 } from './users.controller.js';
-
 import { validateBodyMiddleware } from '../../common/middleware/validate-body.middleware.js';
 import { userLoginSchema } from './schemas/user-login.schema.js';
 import { authMiddleware } from '../../common/middleware/auth.middleware.js';
@@ -26,4 +26,5 @@ userRouter.get('/followers', authMiddleware, paginationMiddleware, getFollowers)
 userRouter.get('/following', authMiddleware, paginationMiddleware, getFollowing);
 userRouter.get('/recipes', authMiddleware, paginationMiddleware, getRecipes);
 userRouter.post('/signout', authMiddleware, signoutUser);
+userRouter.get('/info/:id', authMiddleware, getInfo);
 userRouter.post('/subscribe', authMiddleware, validateBodyMiddleware(userSubscribeSchema), subscribeToUser);

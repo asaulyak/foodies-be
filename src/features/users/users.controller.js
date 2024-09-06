@@ -7,6 +7,7 @@ import {
   listFollowers,
   listFollowing,
   updateUserById,
+  getDetailedInfo,
   getUserSubscription,
   addUserSubscription
 } from './users.service.js';
@@ -101,6 +102,19 @@ export const getRecipes = controllerWrapper(async (req, res, next) => {
   const result = await listRecipes({ ownerId: currentUserId }, { page, limit, offset });
 
   res.json(result);
+});
+
+export const getInfo = controllerWrapper(async (req, res) => {
+  const userId = req.user.id;
+  const { id: searchId } = req.params;
+
+  const info = await getDetailedInfo(userId, searchId);
+
+  if (!info) {
+    throw HttpError(404);
+  } //user not found with searchId
+
+  res.json(info);
 });
 
 export const subscribeToUser = controllerWrapper(async (req, res) => {

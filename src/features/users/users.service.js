@@ -64,6 +64,10 @@ export const comparePassword = async function (email, password) {
   });
 };
 
+export const getUserById = async id => {
+  return Users.findByPk(id);
+};
+
 export const updateUserById = async (id, data) => {
   return Users.update(data, {
     where: {
@@ -228,4 +232,20 @@ export const getDetailedInfo = async (userId, searchId) => {
     totalRecipes: totalRecipesCount,
     totalFollowers: totalFollowersCount
   };
+};
+
+export const getUserSubscription = async ({ currentUserId, subscribedTo }) => {
+  return await UserSubscriptions.findOne({
+    where: {
+      ownerId: currentUserId,
+      subscribedTo: subscribedTo
+    }
+  });
+};
+
+export const addUserSubscription = async ({ currentUserId, subscribedTo }) => {
+  return await UserSubscriptions.create({
+    ownerId: currentUserId,
+    subscribedTo: subscribedTo
+  });
 };

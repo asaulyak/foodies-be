@@ -8,12 +8,14 @@ import {
   getFollowing,
   signoutUser,
   getRecipes,
-  getInfo
+  getInfo,
+  subscribeToUser
 } from './users.controller.js';
 import { validateBodyMiddleware } from '../../common/middleware/validate-body.middleware.js';
 import { userLoginSchema } from './schemas/user-login.schema.js';
 import { authMiddleware } from '../../common/middleware/auth.middleware.js';
 import { paginationMiddleware } from '../../common/middleware/pagination.middleware.js';
+import { userSubscribeSchema } from './schemas/user-subscribe.schema.js';
 
 export const userRouter = express.Router();
 
@@ -25,3 +27,4 @@ userRouter.get('/following', authMiddleware, paginationMiddleware, getFollowing)
 userRouter.get('/recipes', authMiddleware, paginationMiddleware, getRecipes);
 userRouter.post('/signout', authMiddleware, signoutUser);
 userRouter.get('/info/:id', authMiddleware, getInfo);
+userRouter.post('/subscribe', authMiddleware, validateBodyMiddleware(userSubscribeSchema), subscribeToUser);

@@ -16,7 +16,7 @@ const fileFilter = (_, file, cb) => {
 const storage = multer.diskStorage({
   destination: uploadDir,
   filename: (_, file, cb) => {
-    const uniquePrefix = `${Date.now()}_${Math.round(Math.random() * 1e3)}`;
+    const uniquePrefix = `${Math.round(Math.random() * 1e3)}`;
     const fileName = `${uniquePrefix}_${file.originalname}`;
     cb(null, fileName);
   }

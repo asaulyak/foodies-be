@@ -6,6 +6,7 @@ import {
   registerUser,
   getFollowers,
   getFollowing,
+  signoutUser,
   getRecipes,
   getInfo
 } from './users.controller.js';
@@ -22,4 +23,5 @@ userRouter.get('/current', authMiddleware, getCurrent);
 userRouter.get('/followers', authMiddleware, paginationMiddleware, getFollowers);
 userRouter.get('/following', authMiddleware, paginationMiddleware, getFollowing);
 userRouter.get('/recipes', authMiddleware, paginationMiddleware, getRecipes);
+userRouter.post('/signout', authMiddleware, signoutUser);
 userRouter.get('/info/:id', authMiddleware, getInfo);

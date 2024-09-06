@@ -5,7 +5,8 @@ import {
   getUserByEmail,
   listFollowers,
   listFollowing,
-  updateUserById
+  updateUserById,
+  updateUserAvatar
 } from './users.service.js';
 import { controllerWrapper } from '../../common/decorators/controller-wrapper.js';
 import { signToken } from '../../common/auth/auth.service.js';
@@ -62,9 +63,9 @@ export const getCurrent = controllerWrapper((req, res) => {
     throw HttpError(500);
   }
 
-  const { email, name } = user;
+  const { email, name, avatar } = user;
 
-  res.json({ email, name });
+  res.json({ email, name, avatar });
 });
 
 export const getFollowers = controllerWrapper(async (req, res) => {
@@ -89,4 +90,22 @@ export const getRecipes = controllerWrapper(async (req, res, next) => {
   const result = await listRecipes({ ownerId: currentUserId }, { page, limit, offset });
 
   res.json(result);
+});
+
+export const updateAvatar = controllerWrapper(async (req, res) => {
+  if (!req.file) {
+    throw HttpError(400, 'Missing the file to upload');
+  }
+  const { path } = req.file;
+  const user = req.user;
+
+  if (!user) {
+    return next(HttpError(500));
+  }
+
+  const { id, avatar: existingAvatar } = user;
+
+  const avatar = await updateUserAvatar(id, existingAvatar, path);
+
+  return res.status(200).json({ avatar });
 });

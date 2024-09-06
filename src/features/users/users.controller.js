@@ -97,10 +97,10 @@ export const signoutUser = controllerWrapper(async (req, res) => {
   });
 });
 
-export const getRecipes = controllerWrapper(async (req, res, next) => {
+export const getUserRecipes = controllerWrapper(async (req, res, next) => {
   const { id: currentUserId } = req.user;
-  const { page, limit, offset } = req.pagination;
-  const result = await listRecipes({ ownerId: currentUserId }, { page, limit, offset });
+  const { limit, offset } = req.pagination;
+  const result = await listRecipes({ ownerId: currentUserId, limit, offset });
 
   res.json(result);
 });

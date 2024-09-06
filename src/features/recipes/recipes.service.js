@@ -7,11 +7,27 @@ import { Users } from '../../common/data/entities/users/users.entity.js';
 import { UserFavorites } from '../../common/data/entities/users-favorites/users-favorites.entity.js';
 import { sequelize } from '../../common/data/sequelize.js';
 
-export const listRecipes = async ({ ownerId }, { limit, offset }) => {
+export const listRecipes = async ({ ownerId, limit, offset }) => {
   return Recipes.findAll({
     where: {
       ownerId
     },
+    include: [
+      {
+        model: Ingredients,
+        through: { attributes: [] }
+      },
+      {
+        model: Categories
+      },
+      {
+        model: Areas
+      },
+      {
+        model: Users,
+        attributes: ['id', 'name', 'avatar']
+      }
+    ],
     limit,
     offset
   });
@@ -25,7 +41,7 @@ export const getRecipeById = async id => {
     include: [
       {
         model: Ingredients,
-        through: { attributes: [] } // This excludes the RecipeIngredient attributes
+        through: { attributes: [] }
       },
       {
         model: Categories

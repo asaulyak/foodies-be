@@ -123,7 +123,7 @@ export const subscribeToUser = controllerWrapper(async (req, res) => {
   const { subscribedTo } = req.body;
   // Check if the current user is trying to subscribe to their own profile
   if (currentUserId === subscribedTo) {
-    throw HttpError(400, 'You cannot subscribe to your own profile');
+    throw HttpError(409, 'You cannot subscribe to your own profile');
   }
   // Check if the user already exists in the system
   const userToSubscribe = await getUserById(subscribedTo);
@@ -143,32 +143,26 @@ export const subscribeToUser = controllerWrapper(async (req, res) => {
   res.status(201).json(result);
 });
 
-export const unsubscribeFromUser = async (req, res, next) => {
-  try {
-    const { id: subscribedTo } = req.params;
-    const { id: currentUserId } = req.user;
-    // Check if the current user is trying to unsubscribe to their own profile
-    if (currentUserId === subscribedTo) {
-      throw HttpError(400, 'You cannot unsubscribe to your own profile');
-    }
-    // Check if the user already exists in the system
-    const userToUnsubscribe = await getUserById(subscribedTo);
-    if (!userToUnsubscribe) {
-      throw HttpError(404, 'User not found');
-    }
-
-    // Create the subscription
-    const result = await removeUserSubscriptions({ currentUserId, subscribedTo });
-
-    // Check if the subscription already exists
-    if (!result) {
-      throw HttpError(409, 'You are already subscribed to this user');
-    }
-
-    res.status(200).json({
-      message: 'Unsubscribed successfuly'
-    });
-  } catch (e) {
-    next(e);
+export const unsubscribeFromUser = controllerWrapper(async (req, res) => {
+  const { id: subscribedTo } = req.params;
+  const { id: currentUserId } = req.user;
+  // Check if the current user is trying to unsubscribe to their own profile
+  if (currentUserId === subscribedTo) {
+    throw HttpError(409, 'You cannot unsubscribe to your own profile');
   }
-};
+  // Check if the user already exists in the system
+  const userToUnsubscribe = await getUserById(subscribedTo);
+  if (!userToUnsubscribe) {
+    throw HttpError(404, 'User not found');
+  }
+
+  // Create the subscription
+  const result = await removeUserSubscriptions({ currentUserId, subscribedTo });
+
+  // Check if the subscription already exists
+  if (!result) {
+    throw HttpError(409, 'You are already unsubscribed from this user');
+  }
+
+  res.sendStatus(204);
+});

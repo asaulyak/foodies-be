@@ -249,3 +249,12 @@ export const addUserSubscription = async ({ currentUserId, subscribedTo }) => {
     subscribedTo: subscribedTo
   });
 };
+
+export const removeUserSubscriptions = async ({ currentUserId, subscribedTo }) => {
+  return await UserSubscriptions.destroy({
+    where: {
+      ownerId: currentUserId,
+      subscribedTo: subscribedTo
+    }
+  });
+};

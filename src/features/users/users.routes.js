@@ -9,7 +9,8 @@ import {
   signoutUser,
   getRecipes,
   getInfo,
-  subscribeToUser
+  subscribeToUser,
+  unsubscribeFromUser
 } from './users.controller.js';
 import { validateBodyMiddleware } from '../../common/middleware/validate-body.middleware.js';
 import { userLoginSchema } from './schemas/user-login.schema.js';
@@ -28,3 +29,4 @@ userRouter.get('/recipes', authMiddleware, paginationMiddleware, getRecipes);
 userRouter.post('/signout', authMiddleware, signoutUser);
 userRouter.get('/info/:id', authMiddleware, getInfo);
 userRouter.post('/subscribe', authMiddleware, validateBodyMiddleware(userSubscribeSchema), subscribeToUser);
+userRouter.delete('/unsubscribe/:id', authMiddleware, unsubscribeFromUser);

@@ -7,8 +7,7 @@ import {
   isRecipeFavorite,
   getPopularRecipes,
   getRecipesByFilter,
-  removeRecipe,
-  listFavorites
+  removeRecipe
 } from './recipes.service.js';
 import { HttpError } from '../../common/errors/http-error.js';
 import { controllerWrapper } from '../../common/decorators/controller-wrapper.js';
@@ -102,13 +101,3 @@ export const removeFromFavorites = async (req, res, next) => {
     next(e);
   }
 };
-
-export const getFavorites = controllerWrapper(async (req, res) => {
-  const { id } = req.params;
-  const userId = req.user.id;
-
-  const { limit, offset } = req.pagination;
-  const favorites = await listFavorites({ ownerId: userId, limit, offset });
-
-  return res.json(favorites);
-});

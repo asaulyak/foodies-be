@@ -258,3 +258,13 @@ export const removeUserSubscriptions = async ({ currentUserId, subscribedTo }) =
     }
   });
 };
+
+export const listFavorites = async ({ ownerId, limit, offset }) => {
+  return UserFavorites.findAll({
+    where: {
+      ownerId
+    },
+    limit,
+    offset
+  });
+};

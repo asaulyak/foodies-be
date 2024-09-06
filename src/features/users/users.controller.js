@@ -3,10 +3,13 @@ import {
   comparePassword,
   createUser,
   getUserByEmail,
+  getUserById,
   listFollowers,
   listFollowing,
   updateUserById,
-  getDetailedInfo
+  getDetailedInfo,
+  getUserSubscription,
+  addUserSubscription
 } from './users.service.js';
 import { controllerWrapper } from '../../common/decorators/controller-wrapper.js';
 import { signToken } from '../../common/auth/auth.service.js';
@@ -112,4 +115,29 @@ export const getInfo = controllerWrapper(async (req, res) => {
   } //user not found with searchId
 
   res.json(info);
+});
+
+export const subscribeToUser = controllerWrapper(async (req, res) => {
+  const { id: currentUserId } = req.user;
+  const { subscribedTo } = req.body;
+  // Check if the current user is trying to subscribe to their own profile
+  if (currentUserId === subscribedTo) {
+    throw HttpError(400, 'You cannot subscribe to your own profile');
+  }
+  // Check if the user already exists in the system
+  const userToSubscribe = await getUserById(subscribedTo);
+  if (!userToSubscribe) {
+    throw HttpError(404, 'User not found');
+  }
+
+  // Check if the subscription already exists
+  const existingSubscription = await getUserSubscription({ currentUserId, subscribedTo });
+
+  if (existingSubscription) {
+    throw HttpError(409, 'You are already subscribed to this user');
+  }
+  // Create the subscription
+  const result = await addUserSubscription({ currentUserId, subscribedTo });
+
+  res.status(201).json(result);
 });

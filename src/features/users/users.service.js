@@ -166,41 +166,66 @@ export const listFollowing = async ({ currentUserId } = {}, { page, limit, offse
   };
 };
 
-export const getDetailedInfo = async id => {
-  const [userData, totalRecipesCount, totalFavoritesRecipesCount, totalFollowersCount, totalFollowingsCount] =
-    await Promise.all([
-      Users.findByPk(id, {
-        attributes: ['avatar', 'name', 'email']
-      }),
-      Recipes.count({
-        where: {
-          ownerId: id
-        }
-      }),
-      UserFavorites.count({
-        where: {
-          ownerId: id
-        }
-      }),
-      UserSubscriptions.count({
-        where: {
-          subscribedTo: id
-        }
-      }),
-      UserSubscriptions.count({
-        where: {
-          ownerId: id
-        }
-      })
-    ]);
-  if (!userData) return userData; // Return null if user not found
-  const info = {
+export const getDetailedInfo = async (userId, searchId) => {
+  const userData = await Users.findByPk(searchId, {
+    attributes: ['avatar', 'name', 'email']
+  });
+
+  if (!userData) {
+    return userData;
+  } // Return null if user not found
+
+  if (userId === searchId) {
+    const [totalRecipesCount, totalFavoritesRecipesCount, totalFollowersCount, totalFollowingsCount] =
+      await Promise.all([
+        Recipes.count({
+          where: {
+            ownerId: searchId
+          }
+        }),
+        UserFavorites.count({
+          where: {
+            ownerId: searchId
+          }
+        }),
+        UserSubscriptions.count({
+          where: {
+            subscribedTo: searchId
+          }
+        }),
+        UserSubscriptions.count({
+          where: {
+            ownerId: searchId
+          }
+        })
+      ]);
+
+    return {
+      ...userData.dataValues,
+      totalRecipes: totalRecipesCount,
+      totalFavoritesRecipes: totalFavoritesRecipesCount,
+      totalFollowers: totalFollowersCount,
+      totalFollowings: totalFollowingsCount
+    };
+  }
+
+  const [totalRecipesCount, totalFollowersCount] = await Promise.all([
+    Recipes.count({
+      where: {
+        ownerId: searchId
+      }
+    }),
+
+    UserSubscriptions.count({
+      where: {
+        subscribedTo: searchId
+      }
+    })
+  ]);
+
+  return {
     ...userData.dataValues,
     totalRecipes: totalRecipesCount,
-    totalFavoritesRecipes: totalFavoritesRecipesCount,
-    totalFollowers: totalFollowersCount,
-    totalFollowings: totalFollowingsCount
+    totalFollowers: totalFollowersCount
   };
-
-  return info;
 };

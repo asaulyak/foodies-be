@@ -7,7 +7,7 @@ import {
   getFollowers,
   getFollowing,
   signoutUser,
-  getRecipes,
+  getUserRecipes,
   getInfo,
   subscribeToUser,
   unsubscribeFromUser
@@ -25,7 +25,7 @@ userRouter.post('/signin', validateBodyMiddleware(userLoginSchema), loginUser);
 userRouter.get('/current', authMiddleware, getCurrent);
 userRouter.get('/followers', authMiddleware, paginationMiddleware, getFollowers);
 userRouter.get('/following', authMiddleware, paginationMiddleware, getFollowing);
-userRouter.get('/recipes', authMiddleware, paginationMiddleware, getRecipes);
+userRouter.get('/recipes', authMiddleware, paginationMiddleware, getUserRecipes);
 userRouter.post('/signout', authMiddleware, signoutUser);
 userRouter.get('/info/:id', authMiddleware, getInfo);
 userRouter.post('/subscribe', authMiddleware, validateBodyMiddleware(userSubscribeSchema), subscribeToUser);

@@ -10,7 +10,10 @@ const requiredEnvVariables = [
   'DB_PASSWORD',
   'JWT_SECRET',
   'PORT',
-  'NODE_ENV'
+  'NODE_ENV',
+  'CLOUDINARY_NAME',
+  'CLOUDINARY_API_KEY',
+  'CLOUDINARY_API_SECRET'
 ];
 
 export const ENV_CONFIG = {};

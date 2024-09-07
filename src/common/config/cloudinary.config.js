@@ -1,6 +1,7 @@
 import { v2 as cloudinary } from 'cloudinary';
+import { ENV_CONFIG } from './index.js';
 
-const { CLOUDINARY_NAME, CLOUDINARY_API_KEY, CLOUDINARY_API_SECRET } = process.env;
+const { CLOUDINARY_NAME, CLOUDINARY_API_KEY, CLOUDINARY_API_SECRET } = ENV_CONFIG;
 
 cloudinary.config({
   cloud_name: CLOUDINARY_NAME,

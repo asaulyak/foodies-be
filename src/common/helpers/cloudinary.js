@@ -16,7 +16,7 @@ function extractFilename(url) {
   return fileName;
 }
 
-const uploadAvatar = async imagePath => {
+export const uploadAvatar = async imagePath => {
   try {
     return await cloudinary.uploader.upload(imagePath, options);
   } catch ({ status, message }) {
@@ -24,7 +24,7 @@ const uploadAvatar = async imagePath => {
   }
 };
 
-const deleteAvatar = async avatarUrl => {
+export const deleteAvatar = async avatarUrl => {
   try {
     const avatarPublicId = extractFilename(avatarUrl);
     await cloudinary.uploader.destroy(avatarPublicId);
@@ -32,5 +32,3 @@ const deleteAvatar = async avatarUrl => {
     throw HttpError(status, message);
   }
 };
-
-export default { uploadAvatar, deleteAvatar };

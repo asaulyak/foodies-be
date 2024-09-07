@@ -5,7 +5,7 @@ import { Users } from '../../common/data/entities/users/users.entity.js';
 import { UserSubscriptions } from '../../common/data/entities/user-subscriptions/user-subscriptions.entity.js';
 import { Recipes } from '../../common/data/entities/recipes/recipes.entity.js';
 import { getRecipeById } from '../recipes/recipes.service.js';
-import cloudinary from '../../common/helpers/cloudinary.js';
+import { uploadAvatar, deleteAvatar } from '../../common/helpers/cloudinary.js';
 
 export const getUserByEmail = email => {
   return Users.findOne({
@@ -167,9 +167,9 @@ export const listFollowing = async ({ currentUserId } = {}, { page, limit, offse
 };
 
 export const updateUserAvatar = async (userId, prevAvatar, tempFilePath) => {
-  const { secure_url: avatar } = await cloudinary.uploadAvatar(tempFilePath);
+  const { secure_url: avatar } = await uploadAvatar(tempFilePath);
   if (prevAvatar) {
-    await cloudinary.deleteAvatar(prevAvatar);
+    await deleteAvatar(prevAvatar);
   }
 
   try {

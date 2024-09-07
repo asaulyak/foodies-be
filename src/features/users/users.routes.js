@@ -13,7 +13,7 @@ import { validateBodyMiddleware } from '../../common/middleware/validate-body.mi
 import { userLoginSchema } from './schemas/user-login.schema.js';
 import { authMiddleware } from '../../common/middleware/auth.middleware.js';
 import { paginationMiddleware } from '../../common/middleware/pagination.middleware.js';
-import upload from '../../common/middleware/upload.middleware.js';
+import { upload } from '../../common/middleware/upload.middleware.js';
 
 const uploadAvatarMiddleware = upload.single('avatar');
 

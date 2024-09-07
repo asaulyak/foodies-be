@@ -6,7 +6,6 @@ import {
   registerUser,
   getFollowers,
   getFollowing,
-  getRecipes,
   updateAvatar,
   signoutUser,
   getUserRecipes,
@@ -31,7 +30,6 @@ userRouter.post('/signout', authMiddleware, signoutUser);
 userRouter.get('/current', authMiddleware, getCurrent);
 userRouter.get('/followers', authMiddleware, paginationMiddleware, getFollowers);
 userRouter.get('/following', authMiddleware, paginationMiddleware, getFollowing);
-userRouter.get('/recipes', authMiddleware, paginationMiddleware, getRecipes);
 userRouter.get('/recipes', authMiddleware, paginationMiddleware, getUserRecipes);
 userRouter.patch('/avatar', authMiddleware, uploadAvatarMiddleware, updateAvatar);
 userRouter.get('/info/:id', authMiddleware, getInfo);

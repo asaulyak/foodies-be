@@ -7,11 +7,27 @@ import { Users } from '../../common/data/entities/users/users.entity.js';
 import { UserFavorites } from '../../common/data/entities/users-favorites/users-favorites.entity.js';
 import { sequelize } from '../../common/data/sequelize.js';
 
-export const listRecipes = async ({ ownerId }, { page, limit, offset }) => {
+export const listRecipes = async ({ ownerId, limit, offset }) => {
   return Recipes.findAll({
     where: {
       ownerId
     },
+    include: [
+      {
+        model: Ingredients,
+        through: { attributes: [] }
+      },
+      {
+        model: Categories
+      },
+      {
+        model: Areas
+      },
+      {
+        model: Users,
+        attributes: ['id', 'name', 'avatar']
+      }
+    ],
     limit,
     offset
   });
@@ -25,7 +41,7 @@ export const getRecipeById = async id => {
     include: [
       {
         model: Ingredients,
-        through: { attributes: [] } // This excludes the RecipeIngredient attributes
+        through: { attributes: [] }
       },
       {
         model: Categories
@@ -41,8 +57,56 @@ export const getRecipeById = async id => {
   });
 };
 
-export const createRecipes = async body => {
-  return Recipes.create(body);
+export const createRecipes = async ({ ingredients, ...recipeBody }) => {
+  const transaction = await sequelize.transaction();
+  try {
+    const recipe = await Recipes.create(recipeBody, { transaction });
+    const ingredientsStored = await Ingredients.findAll({
+      where: {
+        id: ingredients
+      }
+    });
+
+    await Promise.all(ingredientsStored.map(ingredient => recipe.addIngredient(ingredient, { transaction })));
+
+    await transaction.commit();
+
+    return getRecipeById(recipe.id);
+  } catch (e) {
+    await transaction.rollback();
+    throw e;
+  }
+};
+
+export const addRecipeToFavorites = async (userId, recipeId) => {
+  return UserFavorites.create({
+    ownerId: userId,
+    recipeId: recipeId
+  });
+};
+
+export const recipeExists = async id => {
+  const recipe = await Recipes.findByPk(id);
+  return !!recipe;
+};
+
+export const isRecipeFavorite = async (userId, recipeId) => {
+  const favorite = await UserFavorites.findOne({
+    where: {
+      ownerId: userId,
+      recipeId: recipeId
+    }
+  });
+  return !!favorite;
+};
+
+export const removeRecipeFromFavorites = async (userId, recipeId) => {
+  return UserFavorites.destroy({
+    where: {
+      ownerId: userId,
+      recipeId: recipeId
+    }
+  });
 };
 
 export const getRecipesByFilter = (filter = {}) => {

@@ -6,6 +6,8 @@ import { UserSubscriptions } from '../../common/data/entities/user-subscriptions
 import { Recipes } from '../../common/data/entities/recipes/recipes.entity.js';
 import { getRecipeById } from '../recipes/recipes.service.js';
 import { uploadAvatar, deleteAvatar } from '../../common/helpers/cloudinary.js';
+import { UserFavorites } from '../../common/data/entities/users-favorites/users-favorites.entity.js';
+import { sequelize } from '../../common/data/sequelize.js';
 
 export const getUserByEmail = email => {
   return Users.findOne({
@@ -64,6 +66,10 @@ export const comparePassword = async function (email, password) {
   });
 };
 
+export const getUserById = async id => {
+  return Users.findByPk(id);
+};
+
 export const updateUserById = async (id, data) => {
   return Users.update(data, {
     where: {
@@ -72,7 +78,7 @@ export const updateUserById = async (id, data) => {
   });
 };
 
-export const listFollowers = async ({ currentUserId } = {}, { page, limit, offset }) => {
+export const listFollowers = async ({ currentUserId, page, limit, offset }) => {
   // Get the total count of followers
   const totalFollowersCount = await UserSubscriptions.count({
     where: {
@@ -113,13 +119,13 @@ export const listFollowers = async ({ currentUserId } = {}, { page, limit, offse
 
   return {
     followers: followersWithRecipes,
-    totalFollowers: totalFollowersCount,
+    total: totalFollowersCount,
     page,
     limit
   };
 };
 
-export const listFollowing = async ({ currentUserId } = {}, { page, limit, offset }) => {
+export const listFollowing = async ({ currentUserId, page, limit, offset }) => {
   // Get the total count of following
   const totalFollowingsCount = await UserSubscriptions.count({
     where: {
@@ -160,7 +166,7 @@ export const listFollowing = async ({ currentUserId } = {}, { page, limit, offse
 
   return {
     following: followingsWithRecipes,
-    totalFollowings: totalFollowingsCount,
+    total: totalFollowingsCount,
     page,
     limit
   };
@@ -182,4 +188,93 @@ export const updateUserAvatar = async (userId, prevAvatar, tempFilePath) => {
   await updateUserById(userId, { avatar });
 
   return avatar;
+};
+
+export const getDetailedInfo = async (userId, searchId) => {
+  const userData = await Users.findByPk(searchId, {
+    attributes: ['avatar', 'name', 'email']
+  });
+
+  if (!userData) {
+    return userData;
+  } // Return null if user not found
+
+  if (userId === searchId) {
+    const [totalRecipesCount, totalFavoritesRecipesCount, totalFollowersCount, totalFollowingsCount] =
+      await Promise.all([
+        Recipes.count({
+          where: {
+            ownerId: searchId
+          }
+        }),
+        UserFavorites.count({
+          where: {
+            ownerId: searchId
+          }
+        }),
+        UserSubscriptions.count({
+          where: {
+            subscribedTo: searchId
+          }
+        }),
+        UserSubscriptions.count({
+          where: {
+            ownerId: searchId
+          }
+        })
+      ]);
+
+    return {
+      ...userData.dataValues,
+      totalRecipes: totalRecipesCount,
+      totalFavoritesRecipes: totalFavoritesRecipesCount,
+      totalFollowers: totalFollowersCount,
+      totalFollowings: totalFollowingsCount
+    };
+  }
+
+  const [totalRecipesCount, totalFollowersCount] = await Promise.all([
+    Recipes.count({
+      where: {
+        ownerId: searchId
+      }
+    }),
+
+    UserSubscriptions.count({
+      where: {
+        subscribedTo: searchId
+      }
+    })
+  ]);
+
+  return {
+    ...userData.dataValues,
+    totalRecipes: totalRecipesCount,
+    totalFollowers: totalFollowersCount
+  };
+};
+
+export const getUserSubscription = async ({ currentUserId, subscribedTo }) => {
+  return await UserSubscriptions.findOne({
+    where: {
+      ownerId: currentUserId,
+      subscribedTo: subscribedTo
+    }
+  });
+};
+
+export const addUserSubscription = async ({ currentUserId, subscribedTo }) => {
+  return await UserSubscriptions.create({
+    ownerId: currentUserId,
+    subscribedTo: subscribedTo
+  });
+};
+
+export const removeUserSubscriptions = async ({ currentUserId, subscribedTo }) => {
+  return await UserSubscriptions.destroy({
+    where: {
+      ownerId: currentUserId,
+      subscribedTo: subscribedTo
+    }
+  });
 };

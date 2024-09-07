@@ -1,9 +1,11 @@
 import gravatar from 'gravatar';
 import bcrypt from 'bcrypt';
+import fs from 'fs/promises';
 import { Users } from '../../common/data/entities/users/users.entity.js';
 import { UserSubscriptions } from '../../common/data/entities/user-subscriptions/user-subscriptions.entity.js';
 import { Recipes } from '../../common/data/entities/recipes/recipes.entity.js';
 import { getRecipeById } from '../recipes/recipes.service.js';
+import { uploadAvatar, deleteAvatar } from '../../common/helpers/cloudinary.js';
 import { UserFavorites } from '../../common/data/entities/users-favorites/users-favorites.entity.js';
 import { sequelize } from '../../common/data/sequelize.js';
 
@@ -168,6 +170,24 @@ export const listFollowing = async ({ currentUserId, page, limit, offset }) => {
     page,
     limit
   };
+};
+
+export const updateUserAvatar = async (userId, prevAvatar, tempFilePath) => {
+  const { secure_url: avatar } = await uploadAvatar(tempFilePath);
+  if (prevAvatar) {
+    await deleteAvatar(prevAvatar);
+  }
+
+  try {
+    // Delete file from device after uploading
+    await fs.unlink(tempFilePath);
+  } catch (err) {
+    console.error(`Error deleting previous avatar file: ${err.message}`);
+  }
+
+  await updateUserById(userId, { avatar });
+
+  return avatar;
 };
 
 export const getDetailedInfo = async (userId, searchId) => {

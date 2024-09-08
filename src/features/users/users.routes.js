@@ -11,7 +11,8 @@ import {
   getUserRecipes,
   getInfo,
   subscribeToUser,
-  unsubscribeFromUser
+  unsubscribeFromUser,
+  getFavorites
 } from './users.controller.js';
 import { validateBodyMiddleware } from '../../common/middleware/validate-body.middleware.js';
 import { userLoginSchema } from './schemas/user-login.schema.js';
@@ -24,6 +25,7 @@ const uploadAvatarMiddleware = upload.single('avatar');
 
 export const userRouter = express.Router();
 
+userRouter.get('/favorites', authMiddleware, paginationMiddleware, getFavorites);
 userRouter.post('/signup', validateBodyMiddleware(userRegisterSchema), registerUser);
 userRouter.post('/signin', validateBodyMiddleware(userLoginSchema), loginUser);
 userRouter.post('/signout', authMiddleware, signoutUser);

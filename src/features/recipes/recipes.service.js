@@ -1,41 +1,8 @@
 import { Recipes } from '../../common/data/entities/recipes/recipes.entity.js';
-import { Ingredients } from '../../common/data/entities/ingredients/ingredients.entity.js';
-import { Categories } from '../../common/data/entities/category/categories.entity.js';
-import { Areas } from '../../common/data/entities/areas/areas.entity.js';
 import { RecipeIngredients } from '../../common/data/entities/recipes-ingredients/recipes-ingredients.entity.js';
-import { Users } from '../../common/data/entities/users/users.entity.js';
 import { UserFavorites } from '../../common/data/entities/users-favorites/users-favorites.entity.js';
 import { sequelize } from '../../common/data/sequelize.js';
-import { Sequelize } from 'sequelize';
-
-const commonRecipeInclude = [
-  {
-    model: Ingredients,
-    attributes: [
-      'id',
-      'name',
-      'image',
-      'description',
-      [
-        Sequelize.literal(`(SELECT "quantity" FROM "recipeIngredients"
-                          WHERE "recipeIngredients"."ingredientId" = "ingredients"."id"
-                          AND "recipeIngredients"."recipeId" = "recipes"."id")`),
-        'quantity'
-      ]
-    ],
-    through: { attributes: [] }
-  },
-  {
-    model: Categories
-  },
-  {
-    model: Areas
-  },
-  {
-    model: Users,
-    attributes: ['id', 'name', 'avatar']
-  }
-];
+import { commonRecipeInclude } from '../../common/data/entities/recipes/constants.js';
 
 export const listRecipes = async ({ ownerId, limit, offset }) => {
   return Recipes.findAll({

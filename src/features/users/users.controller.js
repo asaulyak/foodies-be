@@ -11,7 +11,8 @@ import {
   getDetailedInfo,
   getUserSubscription,
   addUserSubscription,
-  removeUserSubscriptions
+  removeUserSubscriptions,
+  listFavorites
 } from './users.service.js';
 import { controllerWrapper } from '../../common/decorators/controller-wrapper.js';
 import { signToken } from '../../common/auth/auth.service.js';
@@ -184,4 +185,13 @@ export const unsubscribeFromUser = controllerWrapper(async (req, res) => {
   }
 
   res.sendStatus(204);
+});
+
+export const getFavorites = controllerWrapper(async (req, res) => {
+  const userId = req.user.id;
+
+  const { limit, offset } = req.pagination;
+  const favorites = await listFavorites({ ownerId: userId, limit, offset });
+
+  return res.json(favorites);
 });

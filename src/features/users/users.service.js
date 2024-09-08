@@ -7,6 +7,7 @@ import { Recipes } from '../../common/data/entities/recipes/recipes.entity.js';
 import { uploadAvatar, deleteAvatar } from '../../common/helpers/cloudinary.js';
 import { UserFavorites } from '../../common/data/entities/users-favorites/users-favorites.entity.js';
 import { commonRecipeInclude } from '../../common/data/entities/recipes/constants.js';
+import { signToken } from '../../common/auth/auth.service.js';
 
 export const getUserByEmail = email => {
   return Users.findOne({
@@ -295,4 +296,20 @@ export const listFavorites = async ({ ownerId, limit, offset }) => {
     },
     include: commonRecipeInclude
   });
+};
+
+export const signIn = async user => {
+  const userData = {
+    name: user.name,
+    email: user.email,
+    id: user.id
+  };
+
+  const token = signToken(userData);
+
+  await updateUserById(user.id, {
+    token
+  });
+
+  return { token, userData };
 };

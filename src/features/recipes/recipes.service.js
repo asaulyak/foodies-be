@@ -147,7 +147,7 @@ export const getRecipesByFilter = async (filter = {}) => {
     offset
   });
 };
-``;
+
 export const getPopularRecipes = async () => {
   const res = (
     await UserFavorites.findAll({

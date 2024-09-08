@@ -9,7 +9,8 @@
     "build": "npm run build-docs",
     "build-docs": "redocly bundle --ext json -o docs/swagger.json",
     "preview-docs": "redocly preview-docs",
-    "prepare": "husky"
+    "prepare": "husky",
+    "migrations:run": "npx sequelize-cli db:migrate"
   },
   "keywords": [],
   "author": "",
@@ -19,7 +20,8 @@
     "husky": "^9.1.5",
     "lint-staged": "^15.2.10",
     "nodemon": "^3.1.4",
-    "prettier": "^3.3.3"
+    "prettier": "^3.3.3",
+    "sequelize-cli": "^6.6.2"
   },
   "lint-staged": {
     "*.{js}": [
@@ -41,6 +43,7 @@
     "jsonwebtoken": "^9.0.2",
     "multer": "^1.4.5-lts.1",
     "pg": "^8.12.0",
+    "pg-hstore": "^2.3.4",
     "sequelize": "^6.37.3",
     "temp-dir": "^3.0.0",
     "uuid": "^10.0.0"

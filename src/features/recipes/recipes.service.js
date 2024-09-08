@@ -3,15 +3,17 @@ import { RecipeIngredients } from '../../common/data/entities/recipes-ingredient
 import { UserFavorites } from '../../common/data/entities/users-favorites/users-favorites.entity.js';
 import { sequelize } from '../../common/data/sequelize.js';
 import { commonRecipeInclude } from '../../common/data/entities/recipes/constants.js';
+import { paginationWrapper } from '../../common/data/pagination.wrapper.js';
 
-export const listRecipes = async ({ ownerId, limit, offset }) => {
-  return Recipes.findAll({
+export const listRecipes = async ({ ownerId, limit, offset, page }) => {
+  return paginationWrapper(() => Recipes, {
     where: {
       ownerId
     },
     include: commonRecipeInclude,
     limit,
-    offset
+    offset,
+    page
   });
 };
 
@@ -83,7 +85,7 @@ export const removeRecipeFromFavorites = async (userId, recipeId) => {
 };
 
 export const getRecipesByFilter = async (filter = {}) => {
-  const { categoryId, areaId, ingredientIds, limit, offset } = filter;
+  const { categoryId, areaId, ingredientIds, limit, offset, page } = filter;
 
   const where = {};
 
@@ -107,11 +109,12 @@ export const getRecipesByFilter = async (filter = {}) => {
     where.id = recipeIds;
   }
 
-  return Recipes.findAll({
+  return paginationWrapper(() => Recipes, {
     include: commonRecipeInclude,
     where,
     limit,
-    offset
+    offset,
+    page
   });
 };
 

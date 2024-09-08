@@ -8,6 +8,7 @@ import { uploadAvatar, deleteAvatar } from '../../common/helpers/cloudinary.js';
 import { UserFavorites } from '../../common/data/entities/users-favorites/users-favorites.entity.js';
 import { commonRecipeInclude } from '../../common/data/entities/recipes/constants.js';
 import { signToken } from '../../common/auth/auth.service.js';
+import { paginationWrapper } from '../../common/data/pagination.wrapper.js';
 
 export const getUserByEmail = email => {
   return Users.findOne({
@@ -118,10 +119,11 @@ export const listFollowers = async ({ currentUserId, page, limit, offset }) => {
   }));
 
   return {
-    followers: followersWithRecipes,
+    data: followersWithRecipes,
     total: totalFollowersCount,
     page,
-    limit
+    limit,
+    offset
   };
 };
 
@@ -165,10 +167,11 @@ export const listFollowing = async ({ currentUserId, page, limit, offset }) => {
   }));
 
   return {
-    following: followingsWithRecipes,
+    data: followingsWithRecipes,
     total: totalFollowingsCount,
     page,
-    limit
+    limit,
+    offset
   };
 };
 
@@ -279,22 +282,23 @@ export const removeUserSubscriptions = async ({ currentUserId, subscribedTo }) =
   });
 };
 
-export const listFavorites = async ({ ownerId, limit, offset }) => {
+export const listFavorites = async ({ ownerId, limit, offset, page }) => {
   const userFavorites = await UserFavorites.findAll({
     where: {
       ownerId
-    },
-    limit,
-    offset
+    }
   });
 
   const recipeIds = userFavorites.map(fav => fav.recipeId);
 
-  return Recipes.findAll({
+  return paginationWrapper(() => Recipes, {
     where: {
       id: recipeIds
     },
-    include: commonRecipeInclude
+    include: commonRecipeInclude,
+    limit,
+    offset,
+    page
   });
 };
 

@@ -84,10 +84,10 @@ export const signoutUser = controllerWrapper(async (req, res) => {
   });
 });
 
-export const getUserRecipes = controllerWrapper(async (req, res, next) => {
+export const getUserRecipes = controllerWrapper(async (req, res) => {
   const { id: currentUserId } = req.user;
-  const { limit, offset } = req.pagination;
-  const result = await listRecipes({ ownerId: currentUserId, limit, offset });
+  const { limit, offset, page } = req.pagination;
+  const result = await listRecipes({ ownerId: currentUserId, limit, offset, page });
 
   res.json(result);
 });
@@ -118,7 +118,7 @@ export const getInfo = controllerWrapper(async (req, res) => {
 
   if (!info) {
     throw HttpError(404);
-  } //user not found with searchId
+  }
 
   res.json(info);
 });
@@ -175,8 +175,8 @@ export const unsubscribeFromUser = controllerWrapper(async (req, res) => {
 export const getFavorites = controllerWrapper(async (req, res) => {
   const userId = req.user.id;
 
-  const { limit, offset } = req.pagination;
-  const favorites = await listFavorites({ ownerId: userId, limit, offset });
+  const { limit, offset, page } = req.pagination;
+  const favorites = await listFavorites({ ownerId: userId, limit, offset, page });
 
   return res.json(favorites);
 });

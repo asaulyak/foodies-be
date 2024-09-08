@@ -12,7 +12,8 @@ import {
   getUserSubscription,
   addUserSubscription,
   removeUserSubscriptions,
-  listFavorites
+  listFavorites,
+  signIn
 } from './users.service.js';
 import { controllerWrapper } from '../../common/decorators/controller-wrapper.js';
 import { signToken } from '../../common/auth/auth.service.js';
@@ -28,12 +29,9 @@ export const registerUser = controllerWrapper(async (req, res) => {
 
   const user = await createUser({ email, password, name });
 
-  res.status(201).json({
-    user: {
-      email,
-      name: user.name
-    }
-  });
+  const signInData = await signIn(user);
+
+  res.status(201).json(signInData);
 });
 
 export const loginUser = controllerWrapper(async (req, res) => {
@@ -44,22 +42,9 @@ export const loginUser = controllerWrapper(async (req, res) => {
     throw HttpError(401, 'Email or password is wrong');
   }
 
-  const userData = {
-    name: user.name,
-    email: user.email,
-    id: user.id
-  };
+  const signInData = await signIn(user);
 
-  const token = signToken(userData);
-
-  await updateUserById(user.id, {
-    token
-  });
-
-  return res.status(200).json({
-    token,
-    user: userData
-  });
+  return res.status(200).json(signInData);
 });
 
 export const getCurrent = controllerWrapper((req, res) => {

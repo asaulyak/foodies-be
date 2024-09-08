@@ -2,8 +2,6 @@ import { config } from 'dotenv';
 
 config();
 
-console.log(process.env.DB_USER);
-
 export default {
   dev: {
     username: process.env.DB_USER,

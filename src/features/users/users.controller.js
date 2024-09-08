@@ -7,6 +7,7 @@ import {
   listFollowers,
   listFollowing,
   updateUserById,
+  updateUserAvatar,
   getDetailedInfo,
   getUserSubscription,
   addUserSubscription,
@@ -67,9 +68,9 @@ export const getCurrent = controllerWrapper((req, res) => {
     throw HttpError(500);
   }
 
-  const { email, name } = user;
+  const { email, name, avatar } = user;
 
-  res.json({ email, name });
+  res.json({ email, name, avatar });
 });
 
 export const getFollowers = controllerWrapper(async (req, res) => {
@@ -103,6 +104,24 @@ export const getUserRecipes = controllerWrapper(async (req, res, next) => {
   const result = await listRecipes({ ownerId: currentUserId, limit, offset });
 
   res.json(result);
+});
+
+export const updateAvatar = controllerWrapper(async (req, res) => {
+  if (!req.file) {
+    throw HttpError(400, 'Missing the file to upload');
+  }
+  const { path } = req.file;
+  const user = req.user;
+
+  if (!user) {
+    return next(HttpError(500));
+  }
+
+  const { id, avatar: existingAvatar } = user;
+
+  const avatar = await updateUserAvatar(id, existingAvatar, path);
+
+  return res.status(200).json({ avatar });
 });
 
 export const getInfo = controllerWrapper(async (req, res) => {

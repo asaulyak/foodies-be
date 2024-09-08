@@ -6,28 +6,43 @@ import { RecipeIngredients } from '../../common/data/entities/recipes-ingredient
 import { Users } from '../../common/data/entities/users/users.entity.js';
 import { UserFavorites } from '../../common/data/entities/users-favorites/users-favorites.entity.js';
 import { sequelize } from '../../common/data/sequelize.js';
+import { Sequelize } from 'sequelize';
+
+const commonRecipeInclude = [
+  {
+    model: Ingredients,
+    attributes: [
+      'id',
+      'name',
+      'image',
+      'description',
+      [
+        Sequelize.literal(`(SELECT "quantity" FROM "recipeIngredients"
+                          WHERE "recipeIngredients"."ingredientId" = "ingredients"."id"
+                          AND "recipeIngredients"."recipeId" = "recipes"."id")`),
+        'quantity'
+      ]
+    ],
+    through: { attributes: [] }
+  },
+  {
+    model: Categories
+  },
+  {
+    model: Areas
+  },
+  {
+    model: Users,
+    attributes: ['id', 'name', 'avatar']
+  }
+];
 
 export const listRecipes = async ({ ownerId, limit, offset }) => {
   return Recipes.findAll({
     where: {
       ownerId
     },
-    include: [
-      {
-        model: Ingredients,
-        through: { attributes: [] }
-      },
-      {
-        model: Categories
-      },
-      {
-        model: Areas
-      },
-      {
-        model: Users,
-        attributes: ['id', 'name', 'avatar']
-      }
-    ],
+    include: commonRecipeInclude,
     limit,
     offset
   });
@@ -38,22 +53,7 @@ export const getRecipeById = async id => {
     where: {
       id
     },
-    include: [
-      {
-        model: Ingredients,
-        through: { attributes: [] }
-      },
-      {
-        model: Categories
-      },
-      {
-        model: Areas
-      },
-      {
-        model: Users,
-        attributes: ['id', 'name', 'avatar']
-      }
-    ]
+    include: commonRecipeInclude
   });
 };
 
@@ -61,13 +61,19 @@ export const createRecipes = async ({ ingredients, ...recipeBody }) => {
   const transaction = await sequelize.transaction();
   try {
     const recipe = await Recipes.create(recipeBody, { transaction });
-    const ingredientsStored = await Ingredients.findAll({
-      where: {
-        id: ingredients
-      }
-    });
 
-    await Promise.all(ingredientsStored.map(ingredient => recipe.addIngredient(ingredient, { transaction })));
+    await Promise.all(
+      ingredients.map(async ingredient => {
+        await RecipeIngredients.create(
+          {
+            recipeId: recipe.id,
+            ingredientId: ingredient.id,
+            quantity: ingredient.quantity
+          },
+          { transaction }
+        );
+      })
+    );
 
     await transaction.commit();
 
@@ -109,44 +115,34 @@ export const removeRecipeFromFavorites = async (userId, recipeId) => {
   });
 };
 
-export const getRecipesByFilter = (filter = {}) => {
+export const getRecipesByFilter = async (filter = {}) => {
   const { categoryId, areaId, ingredientIds, limit, offset } = filter;
 
-  const include = [];
+  const where = {};
 
   if (categoryId) {
-    include.push({
-      model: Categories,
-      where: {
-        id: categoryId
-      }
-    });
+    where.categoryId = categoryId;
   }
 
   if (areaId) {
-    include.push({
-      model: Areas,
-      where: {
-        id: areaId
-      }
-    });
+    where.areaId = areaId;
   }
 
   if (ingredientIds?.length) {
-    include.push({
-      model: Ingredients,
-      through: {
-        model: RecipeIngredients,
-        attributes: []
-      },
-      where: {
-        id: ingredientIds
-      }
-    });
+    const recipeIds = (
+      await RecipeIngredients.findAll({
+        where: {
+          ingredientId: ingredientIds
+        }
+      })
+    ).map(item => item.recipeId);
+
+    where.id = recipeIds;
   }
 
   return Recipes.findAll({
-    include,
+    include: commonRecipeInclude,
+    where,
     limit,
     offset
   });
@@ -161,7 +157,8 @@ export const getPopularRecipes = async () => {
       include: [
         {
           model: Recipes,
-          as: 'recipe'
+          as: 'recipe',
+          include: commonRecipeInclude
         }
       ],
       limit: 4

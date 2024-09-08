@@ -23,6 +23,11 @@ RecipeIngredients.init(
         key: 'id'
       },
       primaryKey: true
+    },
+    quantity: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      defaultValue: '1'
     }
   },
   { sequelize, modelName: 'recipeIngredients' }

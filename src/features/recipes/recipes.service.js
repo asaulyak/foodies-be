@@ -119,22 +119,21 @@ export const getRecipesByFilter = async (filter = {}) => {
 };
 
 export const getPopularRecipes = async () => {
-  const res = (
-    await UserFavorites.findAll({
-      attributes: ['recipeId', [sequelize.fn('COUNT', sequelize.col('userFavorites.ownerId')), 'appearance']],
-      group: ['userFavorites.recipeId', 'recipe.id'],
-      order: [[sequelize.fn('count', sequelize.col('userFavorites.ownerId')), 'DESC']],
-      include: [
-        {
-          model: Recipes,
-          as: 'recipe'
-        }
-      ],
-      limit: 4
-    })
-  ).map(({ recipe }) => recipe);
+  const favoriteRecipes = await UserFavorites.findAll({
+    attributes: ['recipeId', [sequelize.fn('count', sequelize.col('ownerId')), 'count']],
+    group: ['recipeId'],
+    order: [[sequelize.fn('count', sequelize.col('ownerId')), 'DESC']],
+    limit: 4
+  });
 
-  return res;
+  const recipeIds = favoriteRecipes.map(record => record.recipeId);
+
+  return Recipes.findAll({
+    where: {
+      id: recipeIds
+    },
+    include: commonRecipeInclude
+  });
 };
 
 export const removeRecipe = async id => {

@@ -127,8 +127,7 @@ export const getPopularRecipes = async () => {
       include: [
         {
           model: Recipes,
-          as: 'recipe',
-          include: commonRecipeInclude
+          as: 'recipe'
         }
       ],
       limit: 4

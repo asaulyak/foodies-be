@@ -317,3 +317,37 @@ export const signIn = async user => {
 
   return { token, userData };
 };
+
+export const getCurrentUser = async id => {
+  const user = await Users.findByPk(id, {
+    attributes: ['id', 'name', 'avatar', 'email']
+  });
+
+  const favoriteRecipes = await UserFavorites.findAll({
+    where: {
+      ownerId: id
+    },
+    attributes: ['recipeId']
+  });
+
+  const followers = await UserSubscriptions.findAll({
+    where: {
+      subscribedTo: id
+    },
+    attributes: ['ownerId']
+  });
+
+  const following = await UserSubscriptions.findAll({
+    where: {
+      ownerId: id
+    },
+    attributes: ['subscribedTo']
+  });
+
+  return {
+    ...user.dataValues,
+    favoriteRecipes: favoriteRecipes.map(item => item.recipeId),
+    followers: followers.map(item => item.ownerId),
+    following: following.map(item => item.subscribedTo)
+  };
+};

@@ -13,10 +13,10 @@ import {
   addUserSubscription,
   removeUserSubscriptions,
   listFavorites,
-  signIn
+  signIn,
+  getCurrentUser
 } from './users.service.js';
 import { controllerWrapper } from '../../common/decorators/controller-wrapper.js';
-import { signToken } from '../../common/auth/auth.service.js';
 import { listRecipes } from '../recipes/recipes.service.js';
 
 export const registerUser = controllerWrapper(async (req, res) => {
@@ -47,16 +47,16 @@ export const loginUser = controllerWrapper(async (req, res) => {
   return res.status(200).json(signInData);
 });
 
-export const getCurrent = controllerWrapper((req, res) => {
+export const getCurrent = controllerWrapper(async (req, res) => {
   const user = req.user;
 
   if (!user) {
     throw HttpError(500);
   }
 
-  const { email, name, avatar } = user;
+  const currentUser = await getCurrentUser(user.id);
 
-  res.json({ email, name, avatar });
+  res.json(currentUser);
 });
 
 export const getFollowers = controllerWrapper(async (req, res) => {

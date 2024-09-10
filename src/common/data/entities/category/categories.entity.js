@@ -15,6 +15,10 @@ Categories.init(
     name: {
       type: DataTypes.STRING,
       allowNull: false
+    },
+    description: {
+      type: DataTypes.TEXT,
+      allowNull: true
     }
   },
   { sequelize, modelName: 'categories' }

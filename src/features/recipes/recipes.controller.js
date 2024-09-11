@@ -11,6 +11,7 @@ import {
 } from './recipes.service.js';
 import { HttpError } from '../../common/errors/http-error.js';
 import { controllerWrapper } from '../../common/decorators/controller-wrapper.js';
+import { uploadRecipeThumb } from '../../common/helpers/cloudinary.js';
 
 export const getById = controllerWrapper(async (req, res) => {
   const { id } = req.params;
@@ -28,8 +29,21 @@ export const getById = controllerWrapper(async (req, res) => {
   res.json(recipe);
 });
 
+export const uploadThumb = controllerWrapper(async (req, res) => {
+  if (!req.file) {
+    throw HttpError(400, 'Missing the file to upload');
+  }
+
+  const { path } = req.file;
+
+  const { secure_url: thumbUrl } = await uploadRecipeThumb(path);
+
+  return res.send(thumbUrl);
+});
+
 export const createRecipe = controllerWrapper(async (req, res) => {
   const user = req.user;
+
   const newRecipe = await createRecipes({ ...req.body, ownerId: user.id });
 
   if (!newRecipe) {

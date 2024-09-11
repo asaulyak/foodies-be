@@ -9,6 +9,7 @@ import { UserFavorites } from '../../common/data/entities/users-favorites/users-
 import { commonRecipeInclude } from '../../common/data/entities/recipes/constants.js';
 import { signToken } from '../../common/auth/auth.service.js';
 import { paginationWrapper } from '../../common/data/pagination.wrapper.js';
+import { sequelize } from '../../common/data/sequelize.js';
 
 export const getUserByEmail = email => {
   return Users.findOne({
@@ -95,7 +96,7 @@ export const listFollowers = async ({ currentUserId, page, limit, offset }) => {
       {
         model: Users,
         as: 'follower',
-        attributes: ['id', 'name'], // Select desired user attributes
+        attributes: ['id', 'name', 'avatar'], // Select desired user attributes
         include: [
           {
             model: Recipes,
@@ -111,10 +112,34 @@ export const listFollowers = async ({ currentUserId, page, limit, offset }) => {
     offset
   });
 
+  const followersIds = followers.map(follower => follower.ownerId);
+
+  const userRecipesStats = await Users.findAll({
+    attributes: ['id', [sequelize.fn('count', sequelize.col('recipes.id')), 'ownsRecipes']],
+    include: [
+      {
+        model: Recipes,
+        as: 'recipes',
+        attributes: []
+      }
+    ],
+    where: {
+      id: followersIds
+    },
+    group: ['users.id']
+  });
+
+  const userRecipesStatsMap = userRecipesStats.reduce(
+    (acc, item) => ({ ...acc, [item.id]: item.dataValues.ownsRecipes }),
+    {}
+  );
+
   // Format results to include followers with recipes
   const followersWithRecipes = followers.map(follower => ({
     id: follower.follower.id,
     name: follower.follower.name,
+    avatar: follower.follower.avatar,
+    ownsRecipes: userRecipesStatsMap[follower.follower.id],
     recipes: follower.follower.recipes
   }));
 
@@ -143,7 +168,7 @@ export const listFollowing = async ({ currentUserId, page, limit, offset }) => {
       {
         model: Users,
         as: 'following',
-        attributes: ['id', 'name'], // Select desired user attributes
+        attributes: ['id', 'name', 'avatar'], // Select desired user attributes
         include: [
           {
             model: Recipes,
@@ -159,10 +184,34 @@ export const listFollowing = async ({ currentUserId, page, limit, offset }) => {
     offset
   });
 
+  const followingIds = following.map(follower => follower.subscribedTo);
+
+  const userRecipesStats = await Users.findAll({
+    attributes: ['id', [sequelize.fn('count', sequelize.col('recipes.id')), 'ownsRecipes']],
+    include: [
+      {
+        model: Recipes,
+        as: 'recipes',
+        attributes: []
+      }
+    ],
+    where: {
+      id: followingIds
+    },
+    group: ['users.id']
+  });
+
+  const userRecipesStatsMap = userRecipesStats.reduce(
+    (acc, item) => ({ ...acc, [item.id]: item.dataValues.ownsRecipes }),
+    {}
+  );
+
   // Format results to include followers with recipes
   const followingsWithRecipes = following.map(following => ({
     id: following.following.id,
     name: following.following.name,
+    avatar: following.following.avatar,
+    ownsRecipes: userRecipesStatsMap[following.following.id],
     recipes: following.following.recipes
   }));
 

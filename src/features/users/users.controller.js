@@ -60,9 +60,9 @@ export const getCurrent = controllerWrapper(async (req, res) => {
 });
 
 export const getFollowers = controllerWrapper(async (req, res) => {
-  const { id: currentUserId } = req.user;
+  const { id } = req.params;
   const { page, limit, offset } = req.pagination;
-  const result = await listFollowers({ currentUserId, page, limit, offset });
+  const result = await listFollowers({ userId: id, page, limit, offset });
 
   res.json(result);
 });
@@ -85,9 +85,9 @@ export const signoutUser = controllerWrapper(async (req, res) => {
 });
 
 export const getUserRecipes = controllerWrapper(async (req, res) => {
-  const { id: currentUserId } = req.user;
+  const { id } = req.params;
   const { limit, offset, page } = req.pagination;
-  const result = await listRecipes({ ownerId: currentUserId, limit, offset, page });
+  const result = await listRecipes({ ownerId: id, limit, offset, page });
 
   res.json(result);
 });

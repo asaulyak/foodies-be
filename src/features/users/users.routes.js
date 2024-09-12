@@ -30,9 +30,9 @@ userRouter.post('/signup', validateBodyMiddleware(userRegisterSchema), registerU
 userRouter.post('/signin', validateBodyMiddleware(userLoginSchema), loginUser);
 userRouter.post('/signout', authMiddleware, signoutUser);
 userRouter.get('/current', authMiddleware, getCurrent);
-userRouter.get('/followers', authMiddleware, paginationMiddleware, getFollowers);
+userRouter.get('/followers/:id', authMiddleware, paginationMiddleware, getFollowers);
 userRouter.get('/following', authMiddleware, paginationMiddleware, getFollowing);
-userRouter.get('/recipes', authMiddleware, paginationMiddleware, getUserRecipes);
+userRouter.get('/recipes/:id', authMiddleware, paginationMiddleware, getUserRecipes);
 userRouter.patch('/avatar', authMiddleware, uploadAvatarMiddleware, updateAvatar);
 userRouter.get('/info/:id', authMiddleware, getInfo);
 userRouter.post('/subscribe', authMiddleware, validateBodyMiddleware(userSubscribeSchema), subscribeToUser);

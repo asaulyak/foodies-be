@@ -80,17 +80,17 @@ export const updateUserById = async (id, data) => {
   });
 };
 
-export const listFollowers = async ({ currentUserId, page, limit, offset }) => {
+export const listFollowers = async ({ userId, page, limit, offset }) => {
   // Get the total count of followers
   const totalFollowersCount = await UserSubscriptions.count({
     where: {
-      subscribedTo: currentUserId // Count followers of the current user
+      subscribedTo: userId // Count followers of the current user
     }
   });
 
   const followers = await UserSubscriptions.findAll({
     where: {
-      subscribedTo: currentUserId // Find users who follow the current user
+      subscribedTo: userId // Find users who follow the current user
     },
     include: [
       {

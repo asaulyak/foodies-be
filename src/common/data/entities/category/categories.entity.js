@@ -19,6 +19,11 @@ Categories.init(
     description: {
       type: DataTypes.TEXT,
       allowNull: true
+    },
+    order: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      defaultValue: 0
     }
   },
   { sequelize, modelName: 'categories' }

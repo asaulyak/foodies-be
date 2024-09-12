@@ -1,6 +1,7 @@
-import { DataTypes, UUID, fn } from 'sequelize';
+import { DataTypes, fn } from 'sequelize';
 import { BaseEntity } from '../base.entity.js';
 import { sequelize } from '../../sequelize.js';
+import { Users } from '../users/users.entity.js';
 
 export class Reviews extends BaseEntity {}
 
@@ -26,3 +27,7 @@ Reviews.init(
     modelName: 'testimonials'
   }
 );
+
+Reviews.belongsTo(Users, {
+  foreignKey: 'ownerId'
+});

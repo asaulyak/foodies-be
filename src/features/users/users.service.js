@@ -244,7 +244,7 @@ export const updateUserAvatar = async (userId, prevAvatar, tempFilePath) => {
 
 export const getDetailedInfo = async (userId, searchId) => {
   const userData = await Users.findByPk(searchId, {
-    attributes: ['avatar', 'name', 'email']
+    attributes: ['id', 'avatar', 'name', 'email']
   });
 
   if (!userData) {

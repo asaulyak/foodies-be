@@ -76,6 +76,8 @@ export const deleteRecipe = controllerWrapper(async (req, res, next) => {
   if (!result) {
     return next(HttpError(404));
   }
+
+  res.sendStatus(204);
 });
 
 export const addToFavorites = async (req, res, next) => {

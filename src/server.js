@@ -40,13 +40,19 @@ app.use((_, res, __) => {
 app.use((err, _, res, __) => {
   console.log(err.stack);
 
-  const defaultMessage = 'Server error';
+  let safeMessage = 'Server error';
 
-  const { status = 500, message = defaultMessage } = err;
+  const { status = 500, message = safeMessage } = err;
 
   const isProd = ENV_CONFIG.NODE_ENV === 'prod';
 
-  res.status(status).json({ message: isProd ? defaultMessage : message, status: 'fail', code: status });
+  let responseMessage = message;
+
+  if (status >= 500 && isProd) {
+    responseMessage = safeMessage;
+  }
+
+  res.status(status).json({ message: responseMessage, status: 'fail', code: status });
 });
 
 sequelize

@@ -110,7 +110,7 @@ export const removeFromFavorites = async (req, res, next) => {
       return next(HttpError(404, 'Recipe not found'));
     }
     await removeRecipeFromFavorites(userId, id);
-    res.status(204);
+    res.sendStatus(204);
   } catch (e) {
     next(e);
   }

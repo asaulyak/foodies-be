@@ -7,7 +7,7 @@
     "start": "node src/server.js",
     "dev": "nodemon src/server.js",
     "build": "npm run build-docs",
-    "build-docs": "redocly bundle --ext json -o docs/swagger.json",
+    "build-docs": "redocly bundle --ext json -o docs/openapi.yaml",
     "preview-docs": "redocly preview-docs",
     "prepare": "husky",
     "migrations:run": "npx sequelize-cli db:migrate"
@@ -21,7 +21,9 @@
     "lint-staged": "^15.2.10",
     "nodemon": "^3.1.4",
     "prettier": "^3.3.3",
-    "sequelize-cli": "^6.6.2"
+    "sequelize-cli": "^6.6.2",
+    "swagger-ui-express": "^5.0.1",
+    "yamljs": "^0.3.0"
   },
   "lint-staged": {
     "*.{js}": [

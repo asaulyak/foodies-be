@@ -1,0 +1,27 @@
+apis:
+  main:
+    root: docs/openapi.yaml
+
+theme:
+  openapi:
+    disableSearch: false
+    colors:
+      primary: "#61dafb"
+      text: "#333333"
+    spacing:
+      sectionVertical: 30px
+    typography:
+      fontSize: 16px
+      lineHeight: 1.5
+
+htmlTemplate:
+  head:
+    links:
+      - rel: stylesheet
+        href: "https://fonts.googleapis.com/css?family=Open+Sans:300,400,700"
+  footer:
+    components:
+      - type: link
+        config:
+          text: "View on GitHub"
+          url: "https://github.com/asaulyak/foodies-fe"

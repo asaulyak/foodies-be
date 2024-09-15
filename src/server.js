@@ -9,6 +9,7 @@ import { categoriesRouter } from './features/categories/categories.routes.js';
 import { areasRouter } from './features/areas/areas.routes.js';
 import { reviewRouter } from './features/reviews/review.router.js';
 import { ingredientsRouter } from './features/ingredients/ingredients.routes.js';
+import { swaggerDocs } from './common/middleware/swagger.middleware.js';
 
 configEnvVars();
 
@@ -18,6 +19,8 @@ const app = express();
 app.use(express.json());
 // cors
 app.use(cors());
+
+app.use('/api-docs', swaggerDocs());
 
 // Add routes here
 app.use('/api/users', userRouter);

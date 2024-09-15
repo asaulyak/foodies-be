@@ -1,23 +1,468 @@
-openapi: 3.1.0
+openapi: 3.0.0
 info:
+  title: Foodies API
+  description: |
+    Welcome to the **Foodies API** documentation! This API allows you to manage users, recipes, and more.
   version: 1.0.0
-  title: Students app
-  license:
-    name: Apache 2.0
-    url: <http://www.apache.org/licenses/LICENSE-2.0.html>
-  description: >
-    This is a documentation of students app
-tags:
-  - name: Students
-    description: Operations about users.
-  - name: Auth
-    description: Auth operations.
 servers:
-  - url: <http://localhost:3000>
-  - url: <https://example.com/api/v1>
-paths:
+  - url: http://localhost:3000/api
+    description: Local server
+  - url: https://foodies-be-1.onrender.com/api
+    description: Live server
+
 components:
+  schemas:
+    UserRegistration:
+      type: object
+      properties:
+        name:
+          type: string
+        email:
+          type: string
+        password:
+          type: string
+    UserLogin:
+      type: object
+      properties:
+        email:
+          type: string
+        password:
+          type: string
+    HealthStatus:
+      type: object
+      properties:
+        status:
+          type: string
+          example: "Healthy"
+    Recipe:
+      type: object
+      properties:
+        id:
+          type: string
+        title:
+          type: string
+        description:
+          type: string
+    Category:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+    Review:
+      type: object
+      properties:
+        id:
+          type: string
+        rating:
+          type: integer
+        comment:
+          type: string
+    Area:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+    Ingredient:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+    UserSubscribeRequest:
+      type: object
+      properties:
+        userId:
+          type: string
+    RecipeCreateRequest:
+      type: object
+      properties:
+        title:
+          type: string
+        description:
+          type: string
+        ingredients:
+          type: array
+          items:
+            type: string
   securitySchemes:
     bearerAuth:
       type: http
       scheme: bearer
+      bearerFormat: JWT
+
+paths:
+  /users/signup:
+    post:
+      summary: Register a new user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserRegistration'
+      responses:
+        '201':
+          description: User registered successfully
+        '400':
+          description: Invalid input
+  /users/signin:
+    post:
+      summary: Login a user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserLogin'
+      responses:
+        '200':
+          description: Successful login
+        '401':
+          description: Invalid credentials
+  /users/current:
+    get:
+      summary: Get information about the current user
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Current user information
+        '401':
+          description: Unauthorized
+  /users/signout:
+    post:
+      summary: Logout the current user
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Successfully logged out
+        '401':
+          description: Unauthorized
+  /users/avatar:
+    patch:
+      summary: Update the current user's avatar
+      security:
+        - bearerAuth: []
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                avatar:
+                  type: string
+                  format: binary
+      responses:
+        '200':
+          description: Successfully updated avatar
+        '401':
+          description: Unauthorized
+  /users/followers/{id}:
+    get:
+      summary: Get followers of a user
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: List of followers
+        '401':
+          description: Unauthorized
+  /users/following:
+    get:
+      summary: Get following list of the current user
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: List of following
+        '401':
+          description: Unauthorized
+  /users/recipes/{id}:
+    get:
+      summary: Get recipes of a user
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: List of recipes
+        '401':
+          description: Unauthorized
+  /users/info/{id}:
+    get:
+      summary: Get information of a user
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: User information
+        '401':
+          description: Unauthorized
+  /users/subscribe:
+    post:
+      summary: Subscribe to a user
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserSubscribeRequest'
+      responses:
+        '200':
+          description: Successfully subscribed
+        '401':
+          description: Unauthorized
+  /users/unsubscribe/{id}:
+    delete:
+      summary: Unsubscribe from a user
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successfully unsubscribed
+        '401':
+          description: Unauthorized
+  /users/favorites:
+    get:
+      summary: Get favorite recipes of the current user
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: List of favorite recipes
+        '401':
+          description: Unauthorized
+  /health:
+    get:
+      summary: Check the health status of the API
+      responses:
+        '200':
+          description: Health status
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HealthStatus'
+  /recipes:
+    get:
+      summary: Get list of all recipes
+      responses:
+        '200':
+          description: List of recipes
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Recipe'
+    post:
+      summary: Create a new recipe
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RecipeCreateRequest'
+      responses:
+        '201':
+          description: Recipe created successfully
+  /recipes/popular:
+    get:
+      summary: Get popular recipes
+      responses:
+        '200':
+          description: List of popular recipes
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Recipe'
+  /recipes/search:
+    get:
+      summary: Search for recipes
+      parameters:
+        - name: query
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: List of searched recipes
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Recipe'
+  /recipes/{id}:
+    get:
+      summary: Get a recipe by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Recipe details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Recipe'
+    delete:
+      summary: Delete a recipe by ID
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Recipe deleted successfully
+  /recipes/{id}/favorites:
+    post:
+      summary: Add a recipe to favorites
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Recipe added to favorites
+    delete:
+      summary: Remove a recipe from favorites
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Recipe removed from favorites
+  /recipes/thumb:
+    post:
+      summary: Upload a recipe thumbnail
+      security:
+        - bearerAuth: []
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                thumb:
+                  type: string
+                  format: binary
+      responses:
+        '200':
+          description: Thumbnail uploaded successfully
+  /categories:
+    get:
+      summary: Get list of all categories
+      responses:
+        '200':
+          description: List of categories
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Category'
+  /reviews:
+    get:
+      summary: Get list of all reviews
+      responses:
+        '200':
+          description: List of reviews
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Review'
+    post:
+      summary: Create a new review
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Review'
+      responses:
+        '201':
+          description: Review created successfully
+  /areas:
+    get:
+      summary: Get list of all areas
+      responses:
+        '200':
+          description: List of areas
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Area'
+  /ingredients:
+    get:
+      summary: Get list of all ingredients
+      responses:
+        '200':
+          description: List of ingredients
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Ingredient'
